@@ -5,15 +5,30 @@ const nextConfig = {
   
 
   async rewrites() {
-    if (process.env.NODE_ENV !== 'development') {
-      return [];
+    const rewrites = [];
+    const apiBase = process.env.FASTAPI_BASE_URL || process.env.NEXT_PUBLIC_FASTAPI_URL;
+
+    if (apiBase) {
+      rewrites.push(
+        {
+          source: '/api/v1/:path*',
+          destination: `${apiBase}/api/v1/:path*`,
+        },
+        {
+          source: '/app_data/:path*',
+          destination: `${apiBase}/app_data/:path*`,
+        },
+      );
     }
-    return [
-      {
+
+    if (process.env.NODE_ENV === 'development') {
+      rewrites.push({
         source: '/app_data/fonts/:path*',
         destination: 'http://localhost:8000/app_data/fonts/:path*',
-      },
-    ];
+      });
+    }
+
+    return rewrites;
   },
 
   images: {
