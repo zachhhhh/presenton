@@ -91,11 +91,14 @@ export default function LLMProviderSelection({
   };
 
   useEffect(() => {
+    const defaultOllamaUrl =
+      process.env.NEXT_PUBLIC_OLLAMA_URL ||
+      (process.env.NODE_ENV === "development" ? "http://localhost:11434" : "");
     if (!llmConfig.USE_CUSTOM_URL) {
-      setLlmConfig({ ...llmConfig, OLLAMA_URL: "http://localhost:11434" });
+      setLlmConfig({ ...llmConfig, OLLAMA_URL: defaultOllamaUrl });
     } else {
       if (!llmConfig.OLLAMA_URL) {
-        setLlmConfig({ ...llmConfig, OLLAMA_URL: "http://localhost:11434" });
+        setLlmConfig({ ...llmConfig, OLLAMA_URL: defaultOllamaUrl });
       }
     }
   }, [llmConfig.USE_CUSTOM_URL]);
@@ -112,7 +115,9 @@ export default function LLMProviderSelection({
       }
     }
     if (!llmConfig.OLLAMA_URL) {
-      updates.OLLAMA_URL = "http://localhost:11434";
+      updates.OLLAMA_URL =
+        process.env.NEXT_PUBLIC_OLLAMA_URL ||
+        (process.env.NODE_ENV === "development" ? "http://localhost:11434" : "");
     }
     setLlmConfig({ ...llmConfig, ...updates });
   }, []);

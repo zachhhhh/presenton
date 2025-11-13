@@ -34,7 +34,10 @@ export async function POST(req: NextRequest) {
   page.setDefaultNavigationTimeout(300000);
   page.setDefaultTimeout(300000);
 
-  await page.goto(`http://localhost/pdf-maker?id=${id}`, {
+  const baseUrl =
+    process.env.PDF_MAKER_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : `http://localhost:3000`);
+  await page.goto(`${baseUrl}/pdf-maker?id=${id}`, {
     waitUntil: "networkidle0",
     timeout: 300000,
   });
@@ -81,13 +84,7 @@ export async function POST(req: NextRequest) {
   browser.close();
 
   const sanitizedTitle = sanitizeFilename(title ?? "presentation");
-  const appDataDirectory = process.env.APP_DATA_DIRECTORY!;
-  if (!appDataDirectory) {
-    return NextResponse.json({
-      error: "App data directory not found",
-      status: 500,
-    });
-  }
+  const appDataDirectory = process.env.APP_DATA_DIRECTORY || "/tmp";
   const destinationPath = path.join(
     appDataDirectory,
     "exports",

@@ -4,8 +4,10 @@ const nextConfig = {
   distDir: ".next-build",
   
 
-  // Rewrites for development - proxy font requests to FastAPI backend
   async rewrites() {
+    if (process.env.NODE_ENV !== 'development') {
+      return [];
+    }
     return [
       {
         source: '/app_data/fonts/:path*',
