@@ -28,3 +28,8 @@ app.add_middleware(
 )
 
 app.add_middleware(UserConfigEnvUpdateMiddleware)
+
+# Health endpoint
+@app.get("/health")
+async def health():
+    return {"ok": True}
