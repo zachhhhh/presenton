@@ -1,13 +1,16 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import os
-from api.lifespan import app_lifespan
 from api.middlewares import UserConfigEnvUpdateMiddleware
 from api.v1.webhook.router import API_V1_WEBHOOK_ROUTER
 from api.v1.mock.router import API_V1_MOCK_ROUTER
 
 
-app = FastAPI(lifespan=None if os.getenv("DISABLE_LIFESPAN") == "true" else app_lifespan)
+if os.getenv("DISABLE_LIFESPAN") == "true":
+    app = FastAPI()
+else:
+    from api.lifespan import app_lifespan
+    app = FastAPI(lifespan=app_lifespan)
 
 
 # Routers
