@@ -15,7 +15,7 @@ const NotFound = () => {
                     Oops! Page Not Found
                 </h1>
                 <p className="text-lg text-gray-600 mb-4">
-                    It seems you've found a page that doesn't exist. But don't worry, every great presentation starts with a blank slide!
+                    It seems you&apos;ve found a page that doesn&apos;t exist. But don&apos;t worry, every great presentation starts with a blank slide!
                 </p>
 
                 <div className="flex justify-center space-x-4 mb-8">

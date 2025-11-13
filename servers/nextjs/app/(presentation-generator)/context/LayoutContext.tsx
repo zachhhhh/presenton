@@ -179,11 +179,11 @@ export const LayoutProvider: React.FC<{
           try {
             const file = fileName.replace(".tsx", "").replace(".ts", "");
 
-            const module = await import(
+            const layoutModule = await import(
               `@/presentation-templates/${template.templateID}/${file}`
             );
 
-            if (!module.default) {
+            if (!layoutModule.default) {
               toast.error(`${file} has no default export`, {
                 description:
                   "Please ensure the layout file exports a default component",
@@ -192,7 +192,7 @@ export const LayoutProvider: React.FC<{
               continue;
             }
 
-            if (!module.Schema) {
+            if (!layoutModule.Schema) {
               toast.error(`${file} has no Schema export`, {
                 description: "Please ensure the layout file exports a Schema",
               });
@@ -203,19 +203,19 @@ export const LayoutProvider: React.FC<{
             // Cache the layout component immediately after import
             const cacheKey = createCacheKey(template.templateID, fileName);
             if (!layoutCache.has(cacheKey)) {
-              layoutCache.set(cacheKey, module.default);
+              layoutCache.set(cacheKey, layoutModule.default);
             }
 
             const originalLayoutId =
-              module.layoutId || file.toLowerCase().replace(/layout$/, "");
+              layoutModule.layoutId || file.toLowerCase().replace(/layout$/, "");
             const uniqueKey = `${template.templateID}:${originalLayoutId}`;
             const layoutName =
-              module.layoutName || file.replace(/([A-Z])/g, " $1").trim();
+              layoutModule.layoutName || file.replace(/([A-Z])/g, " $1").trim();
             const layoutDescription =
-              module.layoutDescription ||
+              layoutModule.layoutDescription ||
               `${layoutName} layout for presentations`;
 
-            const jsonSchema = z.toJSONSchema(module.Schema, {
+            const jsonSchema = z.toJSONSchema(layoutModule.Schema, {
               override: (ctx) => {
                 delete ctx.jsonSchema.default;
               },
@@ -230,10 +230,10 @@ export const LayoutProvider: React.FC<{
               templateName: template.templateName,
             };
 
-            const sampleData = module.Schema.parse({});
+            const sampleData = layoutModule.Schema.parse({});
             const fullData: FullDataInfo = {
               name: layoutName,
-              component: module.default,
+              component: layoutModule.default,
               schema: jsonSchema,
               sampleData: sampleData,
               fileName,
@@ -426,18 +426,18 @@ export const LayoutProvider: React.FC<{
         for (const i of allLayout) {
           try {
             /* ---------- 1. compile JSX to plain script ------------------ */
-            const module = compileCustomLayout(i.layout_code, React, z);
+            const compiledModule = compileCustomLayout(i.layout_code, React, z);
 
             // Determine identifiers even if subsequent steps fail
             const originalLayoutId =
-              (module && (module as any).layoutId) ||
+              (compiledModule && (compiledModule as any).layoutId) ||
               i.layout_name.toLowerCase().replace(/layout$/, "");
             const uniqueKey = `${`custom-${presentationId}`}:${originalLayoutId}`;
             const layoutName =
-              (module && (module as any).layoutName) ||
+              (compiledModule && (compiledModule as any).layoutName) ||
               i.layout_name.replace(/([A-Z])/g, " $1").trim();
             const layoutDescription =
-              (module && (module as any).layoutDescription) ||
+              (compiledModule && (compiledModule as any).layoutDescription) ||
               `${layoutName} layout for presentations`;
 
             let fullData: FullDataInfo | null = null;
@@ -446,14 +446,14 @@ export const LayoutProvider: React.FC<{
             let sampleData: any = {};
 
             // Validate exports
-            if (!module || !(module as any).default) {
+            if (!compiledModule || !(compiledModule as any).default) {
               const errorComp = createErrorComponent(
                 `Invalid export in ${i.layout_name}`,
                 "Default export not found. Please export a default React component."
               );
               componentToUse = errorComp;
               jsonSchema = {};
-            } else if (!(module as any).Schema) {
+            } else if (!(compiledModule as any).Schema) {
               const errorComp = createErrorComponent(
                 `Schema missing in ${i.layout_name}`,
                 "Schema export not found. Please export a Zod Schema as 'Schema'."
@@ -467,13 +467,13 @@ export const LayoutProvider: React.FC<{
                 i.layout_name
               );
               if (!layoutCache.has(cacheKey)) {
-                layoutCache.set(cacheKey, (module as any).default);
+                layoutCache.set(cacheKey, (compiledModule as any).default);
               }
-              componentToUse = (module as any).default;
+              componentToUse = (compiledModule as any).default;
 
               // Build schema and sample data with guards
               try {
-                jsonSchema = z.toJSONSchema((module as any).Schema, {
+                jsonSchema = z.toJSONSchema((compiledModule as any).Schema, {
                   override: (ctx) => {
                     delete ctx.jsonSchema.default;
                   },
@@ -487,12 +487,12 @@ export const LayoutProvider: React.FC<{
                 jsonSchema = {};
               }
 
-              if (componentToUse !== null && componentToUse !== (module as any).default) {
+              if (componentToUse !== null && componentToUse !== (compiledModule as any).default) {
                 // componentToUse already replaced with error component
                 sampleData = {};
               } else {
                 try {
-                  sampleData = (module as any).Schema.parse({});
+                  sampleData = (compiledModule as any).Schema.parse({});
                 } catch (parseErr: any) {
                   const errorComp = createErrorComponent(
                     `Schema.parse failed for ${i.layout_name}`,

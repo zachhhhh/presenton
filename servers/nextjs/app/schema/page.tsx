@@ -2,7 +2,7 @@
 import React from "react";
 import { useSearchParams } from "next/navigation";
 import { useLayout } from "../(presentation-generator)/context/LayoutContext";
-const page = () => {
+const Page = () => {
   const searchParams = useSearchParams();
   const templateID = searchParams.get("group");
   const { getLayoutsByTemplateID, getTemplateSetting, loading } = useLayout();
@@ -29,4 +29,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
