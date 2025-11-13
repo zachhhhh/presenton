@@ -15,6 +15,8 @@ services:
         value: "false"
       - key: CAN_CHANGE_KEYS
         value: "false"
+      - key: GOOGLE_API_KEY
+        sync: false
       - key: SUPABASE_URL
         sync: false
       - key: SUPABASE_JWT_SECRET
@@ -27,7 +29,3 @@ services:
         value: /tmp
       - key: RENDER_API_KEY
         value: rnd_PnC0sLWXD9ohxpvGYKkZY4Lm6c9W
-    buildFilter:
-      paths:
-        - servers/fastapi/**
-        - render.yaml

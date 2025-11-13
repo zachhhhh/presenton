@@ -18,3 +18,5 @@ chroma
 container.db
 .next-build
 .cursor
+servers/fastapi/.venv_sys/
+servers/fastapi/presenton_backend.egg-info/
