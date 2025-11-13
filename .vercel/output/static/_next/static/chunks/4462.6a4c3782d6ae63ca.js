@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[4462],{54462:function(e){e.exports=JSON.parse('{"description":"Standard layouts for presentations","ordered":false,"default":false}')}}]);

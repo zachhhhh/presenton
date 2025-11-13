@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[778],{60778:function(e,t,u){u.r(t),u.d(t,{Schema:function(){return n}});let n=u(54579).Ry({});t.default=e=>{let{data:t}=e}}}]);

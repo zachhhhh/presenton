@@ -1,0 +1,13 @@
+{
+  "projectId": "prj_yXG9sFVsOg2IrWx0sIKCg0lygOmO",
+  "orgId": "team_FHPNQ8fAkRQTiK89Fes4Pz6O",
+  "projectName": "presenton",
+  "settings": {
+    "framework": "nextjs",
+    "installCommand": null,
+    "buildCommand": null,
+    "outputDirectory": null,
+    "rootDirectory": "servers/nextjs",
+    "nodeVersion": "22.x"
+  }
+}

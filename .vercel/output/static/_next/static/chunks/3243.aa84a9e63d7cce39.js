@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[3243],{83243:function(e){e.exports=JSON.parse('{"description":"Swift layouts for presentations","ordered":false,"default":false}')}}]);

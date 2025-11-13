@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[6101],{86101:function(e){e.exports=JSON.parse('{"description":"Modern white and blue business pitch deck layouts with clean, professional design","ordered":false,"default":false}')}}]);
