@@ -3,12 +3,18 @@ services:
     name: presenton-api
     env: python
     rootDir: servers/fastapi
-    buildCommand: pip install -U pip setuptools wheel && pip install -e .
+    buildCommand: pip install -U pip setuptools wheel && pip install --extra-index-url https://download.pytorch.org/whl/cpu -e .
     startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
     autoDeploy: true
     envVars:
       - key: PYTHON_VERSION
         value: 3.11
+      - key: DISABLE_LIFESPAN
+        value: "true"
+      - key: HEAVY_FEATURES_ENABLED
+        value: "false"
+      - key: CAN_CHANGE_KEYS
+        value: "false"
       - key: SUPABASE_URL
         sync: false
       - key: SUPABASE_JWT_SECRET
