@@ -98,3 +98,5 @@ export async function POST(req: NextRequest) {
     path: destinationPath,
   });
 }
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
