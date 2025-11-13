@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: presenton-api
+    env: python
+    rootDirectory: servers/fastapi
+    buildCommand: pip install -e .
+    startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
+    autoDeploy: true
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_JWT_SECRET
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: APP_DATA_DIRECTORY
+        value: /app/data
+      - key: TEMP_DIRECTORY
+        value: /tmp
+      - key: RENDER_API_KEY
+        value: rnd_PnC0sLWXD9ohxpvGYKkZY4Lm6c9W
