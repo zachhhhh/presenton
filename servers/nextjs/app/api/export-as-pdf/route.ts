@@ -1,6 +1,7 @@
 import path from "path";
 import fs from "fs";
-import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-core";
+import chromium from "@sparticuz/chromium";
 
 import { sanitizeFilename } from "@/app/(presentation-generator)/utils/others";
 import { NextResponse, NextRequest } from "next/server";
@@ -13,21 +14,11 @@ export async function POST(req: NextRequest) {
       { status: 400 }
     );
   }
+  const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH || (await chromium.executablePath());
   const browser = await puppeteer.launch({
-    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+    executablePath,
     headless: true,
-    args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage",
-      "--disable-gpu",
-      "--disable-web-security",
-      "--disable-background-timer-throttling",
-      "--disable-backgrounding-occluded-windows",
-      "--disable-renderer-backgrounding",
-      "--disable-features=TranslateUI",
-      "--disable-ipc-flooding-protection",
-    ],
+    args: chromium.args,
   });
   const page = await browser.newPage();
   await page.setViewport({ width: 1280, height: 720 });

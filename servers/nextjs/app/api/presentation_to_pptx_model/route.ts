@@ -1,6 +1,7 @@
 import { ApiError } from "@/models/errors";
 import { NextRequest, NextResponse } from "next/server";
-import puppeteer, { Browser, ElementHandle, Page } from "puppeteer";
+import puppeteer, { Browser, ElementHandle, Page } from "puppeteer-core";
+import chromium from "@sparticuz/chromium";
 import {
   ElementAttributes,
   SlideAttributesResult,
@@ -76,21 +77,11 @@ async function getPresentationId(request: NextRequest) {
 }
 
 async function getBrowserAndPage(id: string): Promise<[Browser, Page]> {
+  const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH || (await chromium.executablePath());
   const browser = await puppeteer.launch({
-    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+    executablePath,
     headless: true,
-    args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage",
-      "--disable-gpu",
-      "--disable-web-security",
-      "--disable-background-timer-throttling",
-      "--disable-backgrounding-occluded-windows",
-      "--disable-renderer-backgrounding",
-      "--disable-features=TranslateUI",
-      "--disable-ipc-flooding-protection",
-    ],
+    args: chromium.args,
   });
 
   const page = await browser.newPage();

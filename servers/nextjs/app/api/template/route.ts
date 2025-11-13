@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-core";
+import chromium from "@sparticuz/chromium";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -9,33 +10,22 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Missing group name" }, { status: 400 });
   }
 
-  const schemaPageUrl = `http://localhost/schema?group=${encodeURIComponent(
-    groupName
-  )}`;
+  const schemaUrl = new URL("/schema", request.url);
+  schemaUrl.searchParams.set("group", groupName);
 
   let browser;
   try {
+    const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH || (await chromium.executablePath());
     browser = await puppeteer.launch({
-      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+      executablePath,
       headless: true,
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-gpu",
-        "--disable-web-security",
-        "--disable-background-timer-throttling",
-        "--disable-backgrounding-occluded-windows",
-        "--disable-renderer-backgrounding",
-        "--disable-features=TranslateUI",
-        "--disable-ipc-flooding-protection",
-      ],
+      args: chromium.args,
     });
     const page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 720 });
     page.setDefaultNavigationTimeout(300000);
     page.setDefaultTimeout(300000);
-    await page.goto(schemaPageUrl, {
+    await page.goto(schemaUrl.toString(), {
       waitUntil: "networkidle0",
       timeout: 300000,
     });
@@ -84,3 +74,6 @@ export async function GET(request: Request) {
     if (browser) await browser.close();
   }
 }
+
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
