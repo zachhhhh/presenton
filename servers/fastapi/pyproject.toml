@@ -26,6 +26,10 @@ dependencies = [
     "sqlmodel>=0.0.24",
 ]
 
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["api*", "constants*", "enums*", "models*", "services*", "static*", "assets*"]
+
 [build-system]
 requires = ["setuptools>=61", "wheel"]
 build-backend = "setuptools.build_meta"
