@@ -6,7 +6,8 @@ const nextConfig = {
 
   async rewrites() {
     const rewrites = [];
-    const apiBase = process.env.FASTAPI_BASE_URL || process.env.NEXT_PUBLIC_FASTAPI_URL;
+    const defaultApiBase = 'https://presenton-1.onrender.com';
+    const apiBase = process.env.FASTAPI_BASE_URL || process.env.NEXT_PUBLIC_FASTAPI_URL || defaultApiBase;
 
     if (apiBase) {
       rewrites.push(
