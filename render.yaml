@@ -24,7 +24,7 @@ services:
       - key: DATABASE_URL
         sync: false
       - key: APP_DATA_DIRECTORY
-        value: /app/data
+        value: /tmp/app_data
       - key: TEMP_DIRECTORY
         value: /tmp
       - key: RENDER_API_KEY
