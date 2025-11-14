@@ -34,6 +34,9 @@ from utils.image_provider import get_selected_image_provider
 async def check_llm_and_image_provider_api_or_model_availability():
     can_change_keys = get_can_change_keys_env() != "false"
     if not can_change_keys:
+        llm_env = get_llm_provider_env()
+        if not llm_env:
+            return
         if get_llm_provider() == LLMProvider.OPENAI:
             openai_api_key = get_openai_api_key_env()
             if not openai_api_key:
@@ -107,7 +110,7 @@ async def check_llm_and_image_provider_api_or_model_availability():
         # Check for Image Provider and API keys
         selected_image_provider = get_selected_image_provider()
         if not selected_image_provider:
-            raise Exception("IMAGE_PROVIDER must be provided")
+            return
 
         if selected_image_provider == ImageProvider.PEXELS:
             pexels_api_key = get_pexels_api_key_env()
