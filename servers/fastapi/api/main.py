@@ -35,6 +35,7 @@ app.add_middleware(
 app.add_middleware(UserConfigEnvUpdateMiddleware)
 
 # Static app data
+os.makedirs(get_app_data_directory_env(), exist_ok=True)
 app.mount("/app_data", StaticFiles(directory=get_app_data_directory_env()), name="app_data")
 
 # Health endpoint
