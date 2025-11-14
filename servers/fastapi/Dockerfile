@@ -14,8 +14,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy FastAPI backend
-COPY servers/fastapi/ /app/
+# Copy FastAPI backend (the workflow sets context to servers/fastapi)
+COPY . /app/
 
 # Install Python dependencies
 RUN pip install -U pip setuptools wheel && \
