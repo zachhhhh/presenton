@@ -10,7 +10,7 @@ def get_database_url_env():
 
 
 def get_app_data_directory_env():
-    return os.getenv("APP_DATA_DIRECTORY")
+    return os.getenv("APP_DATA_DIRECTORY", "/tmp/app_data")
 
 
 def get_temp_directory_env():

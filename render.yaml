@@ -9,8 +9,6 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.11
-      - key: DISABLE_LIFESPAN
-        value: "true"
       - key: HEAVY_FEATURES_ENABLED
         value: "false"
       - key: CAN_CHANGE_KEYS
