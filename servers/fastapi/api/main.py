@@ -4,6 +4,8 @@ import os
 from api.middlewares import UserConfigEnvUpdateMiddleware
 from api.v1.webhook.router import API_V1_WEBHOOK_ROUTER
 from api.v1.mock.router import API_V1_MOCK_ROUTER
+from starlette.staticfiles import StaticFiles
+from utils.get_env import get_app_data_directory_env
 
 
 if os.getenv("DISABLE_LIFESPAN") == "true":
@@ -31,6 +33,9 @@ app.add_middleware(
 )
 
 app.add_middleware(UserConfigEnvUpdateMiddleware)
+
+# Static app data
+app.mount("/app_data", StaticFiles(directory=get_app_data_directory_env()), name="app_data")
 
 # Health endpoint
 @app.get("/health")
