@@ -13,6 +13,11 @@ services:
           name: presenton-web
           type: web
           property: host
+      - key: FRONTEND_URL
+        fromService:
+          name: presenton-web
+          type: web
+          property: url
       - key: HEAVY_FEATURES_ENABLED
         value: "false"
       - key: CAN_CHANGE_KEYS

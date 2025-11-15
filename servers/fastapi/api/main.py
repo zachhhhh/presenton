@@ -51,10 +51,19 @@ async def health():
 # Root endpoint
 @app.get("/")
 async def root():
+    frontend_url = os.getenv("FRONTEND_URL")
     frontend_base_url = os.getenv("FRONTEND_BASE_URL")
     frontend_host = os.getenv("FRONTEND_HOST")
+
+    if frontend_url:
+        return RedirectResponse(url=f"{frontend_url.rstrip('/')}/dashboard")
     if frontend_base_url:
-        return RedirectResponse(url=f"{frontend_base_url}/dashboard")
+        return RedirectResponse(url=f"{frontend_base_url.rstrip('/')}/dashboard")
     if frontend_host:
-        return RedirectResponse(url=f"https://{frontend_host}.onrender.com/dashboard")
+        host = frontend_host.strip()
+        if host.startswith("http://") or host.startswith("https://"):
+            return RedirectResponse(url=f"{host.rstrip('/')}/dashboard")
+        if "." in host:
+            return RedirectResponse(url=f"https://{host}/dashboard")
+        return RedirectResponse(url=f"https://{host}.onrender.com/dashboard")
     return RedirectResponse(url="https://presenton.ai/dashboard")
