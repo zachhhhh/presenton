@@ -84,7 +84,7 @@
     "cypress": "^14.3.3",
     "esbuild": "0.25.8",
     "eslint": "^8.57.0",
-    "eslint-config-next": "^15.0.0",
+    "eslint-config-next": "^14.2.14",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   },
