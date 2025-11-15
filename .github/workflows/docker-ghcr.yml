@@ -30,6 +30,7 @@ jobs:
           push: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          platforms: linux/amd64
           tags: |
             ghcr.io/zachhhhh/presenton:latest
             ghcr.io/zachhhhh/presenton:${{ github.sha }}

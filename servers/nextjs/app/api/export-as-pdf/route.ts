@@ -1,5 +1,3 @@
-import path from "path";
-import fs from "fs";
 import puppeteer from "puppeteer-core";
 import chromium from "@sparticuz/chromium";
 
@@ -73,20 +71,14 @@ export async function POST(req: NextRequest) {
   });
 
   browser.close();
-
   const sanitizedTitle = sanitizeFilename(title ?? "presentation");
-  const appDataDirectory = process.env.APP_DATA_DIRECTORY || "/tmp";
-  const destinationPath = path.join(
-    appDataDirectory,
-    "exports",
-    `${sanitizedTitle}.pdf`
-  );
-  await fs.promises.mkdir(path.dirname(destinationPath), { recursive: true });
-  await fs.promises.writeFile(destinationPath, pdfBuffer);
-
-  return NextResponse.json({
-    success: true,
-    path: destinationPath,
+  const arrayBuffer = new Uint8Array(pdfBuffer).buffer;
+  return new Response(arrayBuffer as ArrayBuffer, {
+    headers: {
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename="${sanitizedTitle}.pdf"`,
+      "Cache-Control": "no-store",
+    },
   });
 }
 export const dynamic = 'force-dynamic';

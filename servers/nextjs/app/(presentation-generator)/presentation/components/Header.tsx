@@ -116,11 +116,12 @@ const Header = ({
           title: presentationData?.title,
         })
       });
-
       if (response.ok) {
-        const { path: pdfPath } = await response.json();
-        // window.open(pdfPath, '_blank');
-        downloadLink(pdfPath);
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const filename = `${(presentationData?.title || 'presentation')}.pdf`;
+        downloadLink(url, filename);
+        URL.revokeObjectURL(url);
       } else {
         throw new Error("Failed to export PDF");
       }
@@ -141,14 +142,14 @@ const Header = ({
     trackEvent(MixpanelEvent.Header_ReGenerate_Button_Clicked, { pathname });
     router.push(`/presentation?id=${presentation_id}&stream=true`);
   };
-  const downloadLink = (path: string) => {
+  const downloadLink = (path: string, filename?: string) => {
     // if we have popup access give direct download if not redirect to the path
     if (window.opener) {
       window.open(path, '_blank');
     } else {
       const link = document.createElement('a');
       link.href = path;
-      link.download = path.split('/').pop() || 'download';
+      link.download = filename || path.split('/').pop() || 'download';
       document.body.appendChild(link);
       link.click();
     }

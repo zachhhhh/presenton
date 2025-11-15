@@ -1,9 +1,9 @@
 services:
   - type: web
     name: presenton-api
-    runtime: image
-    image: ghcr.io/zachhhhh/presenton:latest
-    dockerCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
+    runtime: docker
+    dockerfilePath: servers/fastapi/Dockerfile
+    healthCheckPath: /health
     autoDeploy: true
     envVars:
       - key: HEAVY_FEATURES_ENABLED
@@ -22,3 +22,17 @@ services:
         value: /tmp/app_data
       - key: TEMP_DIRECTORY
         value: /tmp
+
+  - type: web
+    name: presenton-web
+    runtime: node
+    healthCheckPath: /
+    autoDeploy: true
+    buildCommand: cd servers/nextjs && npm ci && npm run build
+    startCommand: cd servers/nextjs && NEXT_PUBLIC_FASTAPI_URL="https://${FASTAPI_HOST}.onrender.com" npm run start -- -p $PORT
+    envVars:
+      - key: FASTAPI_HOST
+        fromService:
+          name: presenton-api
+          type: web
+          property: host
