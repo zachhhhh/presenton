@@ -1,10 +1,10 @@
-
+const isVercel = !!process.env.VERCEL;
 const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ['@sparticuz/chromium', 'puppeteer-core'],
   },
   reactStrictMode: false,
-  distDir: ".next-build",
+  ...(isVercel ? {} : { distDir: ".next-build" }),
   
 
   async rewrites() {

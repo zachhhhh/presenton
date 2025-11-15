@@ -46,3 +46,14 @@ app.mount("/app_data", StaticFiles(directory=get_app_data_directory_env()), name
 @app.get("/health")
 async def health():
     return {"ok": True}
+
+# Root endpoint
+@app.get("/")
+async def root():
+    return {
+        "status": "ok",
+        "service": "presenton-api",
+        "health": "/health",
+        "docs": "/docs",
+        "api": "/api/v1",
+    }
