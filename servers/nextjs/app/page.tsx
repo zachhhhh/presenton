@@ -1,9 +1,5 @@
-import Home from "@/components/Home"
+import { redirect } from "next/navigation";
 
-const page = () => {
-    return (
-        <Home />
-    )
+export default function Page() {
+  redirect("/dashboard");
 }
-
-export default page

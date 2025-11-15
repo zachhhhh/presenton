@@ -6,6 +6,11 @@ services:
     healthCheckPath: /health
     autoDeploy: true
     envVars:
+      - key: FRONTEND_HOST
+        fromService:
+          name: presenton-web
+          type: web
+          property: host
       - key: HEAVY_FEATURES_ENABLED
         value: "false"
       - key: CAN_CHANGE_KEYS

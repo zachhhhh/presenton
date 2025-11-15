@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 import os
 from api.middlewares import UserConfigEnvUpdateMiddleware
@@ -50,10 +51,10 @@ async def health():
 # Root endpoint
 @app.get("/")
 async def root():
-    return {
-        "status": "ok",
-        "service": "presenton-api",
-        "health": "/health",
-        "docs": "/docs",
-        "api": "/api/v1",
-    }
+    frontend_base_url = os.getenv("FRONTEND_BASE_URL")
+    frontend_host = os.getenv("FRONTEND_HOST")
+    if frontend_base_url:
+        return RedirectResponse(url=f"{frontend_base_url}/dashboard")
+    if frontend_host:
+        return RedirectResponse(url=f"https://{frontend_host}.onrender.com/dashboard")
+    return RedirectResponse(url="https://presenton.ai/dashboard")
