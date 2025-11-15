@@ -9,6 +9,11 @@ def get_database_url_and_connect_args() -> tuple[str, dict]:
         get_app_data_directory_env() or "/tmp/presenton", "fastapi.db"
     )
 
+    if database_url.startswith("sqlite:///"):
+        db_path = database_url.split(":///")[1]
+        db_dir = os.path.dirname(db_path)
+        os.makedirs(db_dir, exist_ok=True)
+
     if database_url.startswith("sqlite://"):
         database_url = database_url.replace("sqlite://", "sqlite+aiosqlite://", 1)
     elif database_url.startswith("postgresql://"):
