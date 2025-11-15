@@ -2,7 +2,8 @@
 const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ['@sparticuz/chromium', 'puppeteer-core'],
-  },reactStrictMode: false,
+  },
+  reactStrictMode: false,
   distDir: ".next-build",
   
 
