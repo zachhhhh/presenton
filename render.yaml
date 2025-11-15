@@ -6,6 +6,8 @@ services:
     healthCheckPath: /health
     autoDeploy: true
     envVars:
+      - key: DISABLE_LIFESPAN
+        value: "true"
       - key: FRONTEND_HOST
         fromService:
           name: presenton-web
