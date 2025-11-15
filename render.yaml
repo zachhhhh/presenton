@@ -22,6 +22,8 @@ services:
         value: /tmp/app_data
       - key: TEMP_DIRECTORY
         value: /tmp
+      - key: USER_CONFIG_PATH
+        value: /tmp/app_data/user_config.json
 
   - type: web
     name: presenton-web
@@ -36,3 +38,5 @@ services:
           name: presenton-api
           type: web
           property: host
+      - key: CAN_CHANGE_KEYS
+        value: "false"
