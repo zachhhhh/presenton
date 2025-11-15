@@ -7,14 +7,20 @@ ENV PYTHONUNBUFFERED=1
 ENV APP_DATA_DIRECTORY=/tmp/app_data
 ENV TEMP_DIRECTORY=/tmp
 
-WORKDIR /app
+WORKDIR /app/servers/fastapi
 
-# System dependencies (keep minimal)
+# System dependencies for building optional wheels
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
+    build-essential \
+    libxml2-dev \
+    libxslt1-dev \
+    libjpeg62-turbo-dev \
+    zlib1g-dev \
+    libpng-dev \
+    libffi-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy FastAPI backend (the workflow sets context to servers/fastapi)
+# Copy repository (Dockerfile path is servers/fastapi)
 COPY . /app/
 
 # Install Python dependencies
