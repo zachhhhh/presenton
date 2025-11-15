@@ -25,7 +25,7 @@ COPY . /app/
 
 # Install Python dependencies
 RUN pip install -U pip setuptools wheel && \
-    pip install --extra-index-url https://download.pytorch.org/whl/cpu --prefer-binary --no-cache-dir -e .
+    pip install --extra-index-url https://download.pytorch.org/whl/cpu --prefer-binary --no-cache-dir .
 
 EXPOSE 8000
 
