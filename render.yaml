@@ -30,7 +30,7 @@ services:
     runtime: node
     healthCheckPath: /
     autoDeploy: true
-    buildCommand: cd servers/nextjs && npm ci && npm run build
+    buildCommand: cd servers/nextjs && NPM_CONFIG_PRODUCTION=false npm install --no-audit --no-fund && npm run build
     startCommand: cd servers/nextjs && NEXT_PUBLIC_FASTAPI_URL="https://${FASTAPI_HOST}.onrender.com" npm run start -- -p $PORT
     envVars:
       - key: FASTAPI_HOST
@@ -40,3 +40,16 @@ services:
           property: host
       - key: CAN_CHANGE_KEYS
         value: "false"
+      - key: NPM_CONFIG_PRODUCTION
+        value: "false"
+      - key: NODE_VERSION
+        value: "20"
+
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
+      - key: NEXT_DISABLE_ESLINT
+        value: "1"
+      - key: NEXT_DISABLE_TYPECHECK
+        value: "1"
+      - key: NODE_OPTIONS
+        value: "--max_old_space_size=1024"

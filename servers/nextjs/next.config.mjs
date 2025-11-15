@@ -1,6 +1,8 @@
 
 const nextConfig = {
-  reactStrictMode: false,
+  experimental: {
+    serverComponentsExternalPackages: ['@sparticuz/chromium', 'puppeteer-core'],
+  },reactStrictMode: false,
   distDir: ".next-build",
   
 
@@ -33,6 +35,7 @@ const nextConfig = {
   },
 
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
