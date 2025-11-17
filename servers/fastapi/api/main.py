@@ -2,11 +2,13 @@ from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 from api.middlewares import UserConfigEnvUpdateMiddleware
 
 # Load environment variables from .env file
-load_dotenv()
+project_root = Path(__file__).resolve().parents[3]
+load_dotenv(project_root / ".env")
 from api.v1.webhook.router import API_V1_WEBHOOK_ROUTER
 from api.v1.mock.router import API_V1_MOCK_ROUTER
 from starlette.staticfiles import StaticFiles

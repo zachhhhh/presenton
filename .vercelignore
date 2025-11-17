@@ -1,0 +1,13 @@
+.venv
+.next
+.next-build
+.pytest_cache
+node_modules
+tmp
+app_data
+user_data
+servers/nextjs/node_modules
+servers/nextjs/.next
+servers/nextjs/.next-build
+supabase
+readme_assets

@@ -1,3 +1,8 @@
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 const isVercel = !!process.env.VERCEL;
 const nextConfig = {
   experimental: {
@@ -9,7 +14,10 @@ const nextConfig = {
 
   async rewrites() {
     const rewrites = [];
-    const defaultApiBase = 'https://presenton-1.onrender.com';
+    const defaultApiBase =
+      process.env.NODE_ENV === 'development'
+        ? 'http://localhost:8000'
+        : 'https://presenton-1.onrender.com';
     const apiBase = process.env.FASTAPI_BASE_URL || process.env.NEXT_PUBLIC_FASTAPI_URL || defaultApiBase;
 
     if (apiBase) {
@@ -77,6 +85,12 @@ const nextConfig = {
     ],
   },
   
+  webpack: (config) => {
+    config.resolve = config.resolve || {};
+    config.resolve.alias = config.resolve.alias || {};
+    config.resolve.alias['@'] = path.resolve(__dirname);
+    return config;
+  },
 };
 
 export default nextConfig;

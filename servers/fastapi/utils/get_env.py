@@ -1,4 +1,21 @@
 import os
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+
+def _load_env():
+    try:
+        project_root = Path(__file__).resolve().parents[3]
+        dotenv_path = project_root / ".env"
+        if dotenv_path.exists():
+            load_dotenv(dotenv_path=dotenv_path, override=False)
+    except Exception:
+        # Ignore dotenv issues and fall back to existing environment variables
+        pass
+
+
+_load_env()
 
 
 def get_can_change_keys_env():
