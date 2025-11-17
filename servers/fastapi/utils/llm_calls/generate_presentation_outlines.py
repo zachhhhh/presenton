@@ -93,10 +93,13 @@ async def generate_ppt_outline(
     include_title_slide: bool = True,
     web_search: bool = False,
 ):
-    model = get_model()
-    response_model = get_presentation_outline_model_with_n_slides(n_slides)
-
-    client = LLMClient()
+    try:
+        model = get_model()
+        response_model = get_presentation_outline_model_with_n_slides(n_slides)
+        client = LLMClient()
+    except Exception as e:
+        yield handle_llm_client_exceptions(e)
+        return
 
     try:
         async for chunk in client.stream_structured(
