@@ -16,13 +16,16 @@ from utils.get_env import (
 )
 
 
+CUSTOM_COMPATIBLE_PROVIDERS = (LLMProvider.CUSTOM, LLMProvider.ZAI)
+
+
 def get_llm_provider():
     try:
         return LLMProvider(get_llm_provider_env())
     except:
         raise HTTPException(
             status_code=500,
-            detail=f"Invalid LLM provider. Please select one of: openai, google, anthropic, ollama, custom",
+            detail="Invalid LLM provider. Please select one of: openai, google, anthropic, ollama, custom, z.ai",
         )
 
 
@@ -43,7 +46,7 @@ def is_ollama_selected():
 
 
 def is_custom_llm_selected():
-    return get_llm_provider() == LLMProvider.CUSTOM
+    return get_llm_provider() in CUSTOM_COMPATIBLE_PROVIDERS
 
 
 def get_model():
@@ -56,10 +59,10 @@ def get_model():
         return get_anthropic_model_env() or DEFAULT_ANTHROPIC_MODEL
     elif selected_llm == LLMProvider.OLLAMA:
         return get_ollama_model_env()
-    elif selected_llm == LLMProvider.CUSTOM:
+    elif selected_llm in CUSTOM_COMPATIBLE_PROVIDERS:
         return get_custom_model_env()
     else:
         raise HTTPException(
             status_code=500,
-            detail=f"Invalid LLM provider. Please select one of: openai, google, anthropic, ollama, custom",
+            detail="Invalid LLM provider. Please select one of: openai, google, anthropic, ollama, custom, z.ai",
         )

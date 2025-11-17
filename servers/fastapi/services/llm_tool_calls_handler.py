@@ -55,7 +55,12 @@ class LLMToolCallsHandler:
             self.dynamic_tools.append(tool)
 
         match self.client.llm_provider:
-            case LLMProvider.OPENAI | LLMProvider.OLLAMA | LLMProvider.CUSTOM:
+            case (
+                LLMProvider.OPENAI
+                | LLMProvider.OLLAMA
+                | LLMProvider.CUSTOM
+                | LLMProvider.ZAI
+            ):
                 return self.parse_tool_openai(tool, strict)
             case LLMProvider.ANTHROPIC:
                 return self.parse_tool_anthropic(tool)

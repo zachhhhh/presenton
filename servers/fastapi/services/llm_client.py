@@ -53,7 +53,11 @@ from utils.get_env import (
     get_tool_calls_env,
     get_web_grounding_env,
 )
-from utils.llm_provider import get_llm_provider, get_model
+from utils.llm_provider import (
+    CUSTOM_COMPATIBLE_PROVIDERS,
+    get_llm_provider,
+    get_model,
+)
 from utils.parsers import parse_bool_or_none
 from utils.schema_utils import (
     ensure_strict_json_schema,
@@ -70,7 +74,7 @@ class LLMClient:
 
     # ? Use tool calls
     def use_tool_calls_for_structured_output(self) -> bool:
-        if self.llm_provider != LLMProvider.CUSTOM:
+        if self.llm_provider not in CUSTOM_COMPATIBLE_PROVIDERS:
             return False
         return parse_bool_or_none(get_tool_calls_env()) or False
 
@@ -78,7 +82,7 @@ class LLMClient:
     def enable_web_grounding(self) -> bool:
         if (
             self.llm_provider == LLMProvider.OLLAMA
-            or self.llm_provider == LLMProvider.CUSTOM
+            or self.llm_provider in CUSTOM_COMPATIBLE_PROVIDERS
         ):
             return False
         return parse_bool_or_none(get_web_grounding_env()) or False
@@ -98,12 +102,12 @@ class LLMClient:
                 return self._get_anthropic_client()
             case LLMProvider.OLLAMA:
                 return self._get_ollama_client()
-            case LLMProvider.CUSTOM:
+            case LLMProvider.CUSTOM | LLMProvider.ZAI:
                 return self._get_custom_client()
             case _:
                 raise HTTPException(
                     status_code=400,
-                    detail="LLM Provider must be either openai, google, anthropic, ollama, or custom",
+                    detail="LLM Provider must be either openai, google, anthropic, ollama, custom, or z.ai",
                 )
 
     def _get_openai_client(self):
@@ -437,7 +441,7 @@ class LLMClient:
                 content = await self._generate_ollama(
                     model=model, messages=messages, max_tokens=max_tokens
                 )
-            case LLMProvider.CUSTOM:
+            case LLMProvider.CUSTOM | LLMProvider.ZAI:
                 content = await self._generate_custom(
                     model=model, messages=messages, max_tokens=max_tokens
                 )
@@ -819,7 +823,7 @@ class LLMClient:
                     strict=strict,
                     max_tokens=max_tokens,
                 )
-            case LLMProvider.CUSTOM:
+            case LLMProvider.CUSTOM | LLMProvider.ZAI:
                 content = await self._generate_custom_structured(
                     model=model,
                     messages=messages,
@@ -1130,7 +1134,7 @@ class LLMClient:
                 return self._stream_ollama(
                     model=model, messages=messages, max_tokens=max_tokens
                 )
-            case LLMProvider.CUSTOM:
+            case LLMProvider.CUSTOM | LLMProvider.ZAI:
                 return self._stream_custom(
                     model=model, messages=messages, max_tokens=max_tokens
                 )
@@ -1562,7 +1566,7 @@ class LLMClient:
                     strict=strict,
                     max_tokens=max_tokens,
                 )
-            case LLMProvider.CUSTOM:
+            case LLMProvider.CUSTOM | LLMProvider.ZAI:
                 return self._stream_custom_structured(
                     model=model,
                     messages=messages,

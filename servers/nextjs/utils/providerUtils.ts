@@ -76,6 +76,15 @@ export const changeProvider = (
     newConfig.IMAGE_PROVIDER = "pexels"; // default for ollama and custom
   }
 
+  if (provider === "z.ai") {
+    if (!newConfig.CUSTOM_LLM_URL) {
+      newConfig.CUSTOM_LLM_URL = "https://api.z.ai/v1";
+    }
+    if (!newConfig.CUSTOM_MODEL) {
+      newConfig.CUSTOM_MODEL = "glm-4.6";
+    }
+  }
+
   return newConfig;
 };
 

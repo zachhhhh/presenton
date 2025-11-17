@@ -89,4 +89,9 @@ export const LLM_PROVIDERS: Record<string, LLMProviderOption> = {
     label: "Custom",
     description: "Custom LLM",
   },
-}; 
+  "z.ai": {
+    value: "z.ai",
+    label: "Z.AI",
+    description: "Z.AI OpenAI-compatible endpoint",
+  },
+};

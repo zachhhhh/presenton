@@ -58,6 +58,12 @@ export const hasValidLLMConfig = (llmConfig: LLMConfig) => {
     llmConfig.CUSTOM_MODEL !== null &&
     llmConfig.CUSTOM_MODEL !== undefined;
 
+  const isZaiConfigValid =
+    isCustomConfigValid &&
+    llmConfig.CUSTOM_LLM_API_KEY !== "" &&
+    llmConfig.CUSTOM_LLM_API_KEY !== null &&
+    llmConfig.CUSTOM_LLM_API_KEY !== undefined;
+
   const isImageConfigValid = () => {
     switch (llmConfig.IMAGE_PROVIDER) {
       case "pexels":
@@ -80,10 +86,12 @@ export const hasValidLLMConfig = (llmConfig: LLMConfig) => {
         ? isGoogleConfigValid
         : llmConfig.LLM === "anthropic"
           ? isAnthropicConfigValid
-          : llmConfig.LLM === "ollama"
-            ? isOllamaConfigValid
-            : llmConfig.LLM === "custom"
-              ? isCustomConfigValid
+        : llmConfig.LLM === "ollama"
+          ? isOllamaConfigValid
+          : llmConfig.LLM === "custom"
+            ? isCustomConfigValid
+            : llmConfig.LLM === "z.ai"
+              ? isZaiConfigValid
               : false;
 
   return isLLMConfigValid && isImageConfigValid();

@@ -49,17 +49,21 @@ export default function LLMProviderSelection({
 }: LLMProviderSelectionProps) {
   const [llmConfig, setLlmConfig] = useState<LLMConfig>(initialLLMConfig);
   const [openImageProviderSelect, setOpenImageProviderSelect] = useState(false);
+  const isZaiProvider = llmConfig.LLM === "z.ai";
+  const usesCustomEndpoint = llmConfig.LLM === "custom" || isZaiProvider;
 
   useEffect(() => {
     onConfigChange(llmConfig);
   }, [llmConfig]);
 
   useEffect(() => {
+    const isZai = llmConfig.LLM === "z.ai";
+    const usesCustom = llmConfig.LLM === "custom" || isZai;
     const needsModelSelection =
       (llmConfig.LLM === "openai" && !llmConfig.OPENAI_MODEL) ||
       (llmConfig.LLM === "google" && !llmConfig.GOOGLE_MODEL) ||
       (llmConfig.LLM === "ollama" && !llmConfig.OLLAMA_MODEL) ||
-      (llmConfig.LLM === "custom" && !llmConfig.CUSTOM_MODEL) ||
+      (usesCustom && !llmConfig.CUSTOM_MODEL) ||
       (llmConfig.LLM === "anthropic" && !llmConfig.ANTHROPIC_MODEL);
 
     const needsApiKey =
@@ -69,16 +73,29 @@ export default function LLMProviderSelection({
       (llmConfig.IMAGE_PROVIDER === "pexels" && !llmConfig.PEXELS_API_KEY) ||
       (llmConfig.IMAGE_PROVIDER === "pixabay" && !llmConfig.PIXABAY_API_KEY);
 
-    const needsOllamaUrl = (llmConfig.LLM === "ollama" && !llmConfig.OLLAMA_URL);
+    const needsOllamaUrl = llmConfig.LLM === "ollama" && !llmConfig.OLLAMA_URL;
+    const needsZaiCredentials =
+      isZai &&
+      (!llmConfig.CUSTOM_LLM_URL || !llmConfig.CUSTOM_LLM_API_KEY);
+
+    const buttonText = needsModelSelection
+      ? "Please Select a Model"
+      : needsApiKey
+        ? "Please Enter API Key"
+        : needsOllamaUrl
+          ? "Please Enter Ollama URL"
+          : needsZaiCredentials
+            ? "Please Configure Z.AI"
+            : "Save Configuration";
 
     setButtonState({
       isLoading: false,
-      isDisabled: needsModelSelection || needsApiKey || needsOllamaUrl,
-      text: needsModelSelection ? "Please Select a Model" : needsApiKey ? "Please Enter API Key" : needsOllamaUrl ? "Please Enter Ollama URL" : "Save Configuration",
-      showProgress: false
+      isDisabled:
+        needsModelSelection || needsApiKey || needsOllamaUrl || needsZaiCredentials,
+      text: buttonText,
+      showProgress: false,
     });
-
-  }, [llmConfig]);
+  }, [llmConfig, setButtonState]);
 
   const input_field_changed = (new_value: string | boolean, field: string) => {
     const updatedConfig = updateLLMConfig(llmConfig, field, new_value);
@@ -89,6 +106,26 @@ export default function LLMProviderSelection({
     const newConfig = changeProviderUtil(llmConfig, provider);
     setLlmConfig(newConfig);
   };
+
+  useEffect(() => {
+    if (llmConfig.LLM !== "z.ai") return;
+    setLlmConfig((prev) => {
+      const updates: Partial<LLMConfig> = {};
+      let shouldUpdate = false;
+      if (!prev.CUSTOM_LLM_URL) {
+        updates.CUSTOM_LLM_URL = "https://api.z.ai/v1";
+        shouldUpdate = true;
+      }
+      if (!prev.CUSTOM_MODEL) {
+        updates.CUSTOM_MODEL = "glm-4.6";
+        shouldUpdate = true;
+      }
+      if (!shouldUpdate) {
+        return prev;
+      }
+      return { ...prev, ...updates };
+    });
+  }, [llmConfig.LLM]);
 
   useEffect(() => {
     const defaultOllamaUrl =
@@ -131,12 +168,13 @@ export default function LLMProviderSelection({
           onValueChange={handleProviderChange}
           className="w-full"
         >
-          <TabsList className="grid w-full grid-cols-5 bg-transparent h-10">
+          <TabsList className="grid w-full grid-cols-6 bg-transparent h-10">
             <TabsTrigger value="openai">OpenAI</TabsTrigger>
             <TabsTrigger value="google">Google</TabsTrigger>
             <TabsTrigger value="anthropic">Anthropic</TabsTrigger>
             <TabsTrigger value="ollama">Ollama</TabsTrigger>
             <TabsTrigger value="custom">Custom</TabsTrigger>
+            <TabsTrigger value="z.ai">Z.AI</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
@@ -192,6 +230,22 @@ export default function LLMProviderSelection({
 
           {/* Custom Content */}
           <TabsContent value="custom" className="mt-6">
+            <CustomConfig
+              customLlmUrl={llmConfig.CUSTOM_LLM_URL || ""}
+              customLlmApiKey={llmConfig.CUSTOM_LLM_API_KEY || ""}
+              customModel={llmConfig.CUSTOM_MODEL || ""}
+              toolCalls={llmConfig.TOOL_CALLS || false}
+              disableThinking={llmConfig.DISABLE_THINKING || false}
+              onInputChange={input_field_changed}
+            />
+          </TabsContent>
+
+          {/* Z.AI Content */}
+          <TabsContent value="z.ai" className="mt-6">
+            <div className="mb-4 p-4 bg-purple-50 border border-purple-200 rounded-lg text-sm text-purple-900">
+              Connect to Z.AI's OpenAI-compatible endpoint. Defaults are pre-filled, but replace them
+              with your workspace URL, API key, and preferred `glm-*` model as needed.
+            </div>
             <CustomConfig
               customLlmUrl={llmConfig.CUSTOM_LLM_URL || ""}
               customLlmApiKey={llmConfig.CUSTOM_LLM_API_KEY || ""}
@@ -344,7 +398,7 @@ export default function LLMProviderSelection({
                 Using{" "}
                 {llmConfig.LLM === "ollama"
                   ? llmConfig.OLLAMA_MODEL ?? "xxxxx"
-                  : llmConfig.LLM === "custom"
+                  : usesCustomEndpoint
                     ? llmConfig.CUSTOM_MODEL ?? "xxxxx"
                     : llmConfig.LLM === "anthropic"
                       ? llmConfig.ANTHROPIC_MODEL ?? "xxxxx"
