@@ -12,6 +12,13 @@ from urllib.parse import urlparse
 
 if os.getenv("DISABLE_LIFESPAN") == "true":
     app = FastAPI()
+    from services.database import create_db_and_tables
+    @app.on_event("startup")
+    async def startup_create_tables():
+        try:
+            await create_db_and_tables()
+        except Exception:
+            pass
 else:
     from api.lifespan import app_lifespan
     app = FastAPI(lifespan=app_lifespan)
