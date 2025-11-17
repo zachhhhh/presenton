@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 import os
@@ -7,6 +7,7 @@ from api.v1.webhook.router import API_V1_WEBHOOK_ROUTER
 from api.v1.mock.router import API_V1_MOCK_ROUTER
 from starlette.staticfiles import StaticFiles
 from utils.get_env import get_app_data_directory_env
+from urllib.parse import urlparse
 
 
 if os.getenv("DISABLE_LIFESPAN") == "true":
@@ -50,13 +51,19 @@ async def health():
 
 # Root endpoint
 @app.get("/")
-async def root():
+async def root(request: Request):
     frontend_url = os.getenv("FRONTEND_URL")
     frontend_base_url = os.getenv("FRONTEND_BASE_URL")
     frontend_host = os.getenv("FRONTEND_HOST")
 
+    current_host = request.headers.get("host") or urlparse(str(request.url)).netloc
     if frontend_url:
-        return RedirectResponse(url=f"{frontend_url.rstrip('/')}/dashboard")
+        parsed = urlparse(frontend_url)
+        target_host = parsed.netloc or frontend_url.replace("http://", "").replace("https://", "")
+        if target_host and target_host == current_host:
+            frontend_url = ""
+        else:
+            return RedirectResponse(url=f"{frontend_url.rstrip('/')}/dashboard")
     if frontend_base_url:
         return RedirectResponse(url=f"{frontend_base_url.rstrip('/')}/dashboard")
     if frontend_host:
