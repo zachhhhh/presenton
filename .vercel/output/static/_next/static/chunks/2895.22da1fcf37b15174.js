@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[2895],{42895:function(e){e.exports=JSON.parse('{"description":"General purpose layouts for common presentation elements","ordered":false,"default":true}')}}]);

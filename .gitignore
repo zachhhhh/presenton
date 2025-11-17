@@ -20,3 +20,4 @@ container.db
 .cursor
 servers/fastapi/.venv_sys/
 servers/fastapi/presenton_backend.egg-info/
+.vercel/output/

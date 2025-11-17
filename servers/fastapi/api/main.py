@@ -27,7 +27,9 @@ else:
 # Routers
 app.include_router(API_V1_WEBHOOK_ROUTER)
 app.include_router(API_V1_MOCK_ROUTER)
-if os.getenv("HEAVY_FEATURES_ENABLED") == "true":
+heavy_features_enabled = os.getenv("HEAVY_FEATURES_ENABLED", "true").lower() == "true"
+
+if heavy_features_enabled:
     from api.v1.ppt.router import API_V1_PPT_ROUTER
     app.include_router(API_V1_PPT_ROUTER)
 
