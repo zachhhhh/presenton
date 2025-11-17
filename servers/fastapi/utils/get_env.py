@@ -56,8 +56,7 @@ def get_llm_provider_env():
     if os.getenv("OLLAMA_URL"):
         return "ollama"
 
-    # Fall back to an explicit default (env configurable) rather than erroring.
-    return os.getenv("DEFAULT_LLM_PROVIDER") or "openai"
+    return None
 
 
 def get_anthropic_api_key_env():

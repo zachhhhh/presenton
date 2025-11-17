@@ -20,9 +20,16 @@ CUSTOM_COMPATIBLE_PROVIDERS = (LLMProvider.CUSTOM, LLMProvider.ZAI)
 
 
 def get_llm_provider():
+    selected = get_llm_provider_env()
+    if not selected:
+        raise HTTPException(
+            status_code=500,
+            detail="LLM provider is not configured. Set the `LLM` env (or `DEFAULT_LLM_PROVIDER`) and the matching API key/url before generating outlines.",
+        )
+
     try:
-        return LLMProvider(get_llm_provider_env())
-    except:
+        return LLMProvider(selected)
+    except ValueError:
         raise HTTPException(
             status_code=500,
             detail="Invalid LLM provider. Please select one of: openai, google, anthropic, ollama, custom, z.ai",
