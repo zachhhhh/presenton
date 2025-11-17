@@ -1,14 +1,20 @@
 #!/bin/bash
+set -euo pipefail
 
 echo "🚀 Deploying to Render..."
 
-# Check if render CLI is installed
 if ! command -v render &> /dev/null; then
-    echo "❌ Render CLI not found. Installing..."
-    npm install -g @render/cli
+    cat <<'EOF'
+❌ Render CLI not found.
+
+Please install the official Render CLI or trigger a deploy from the Render dashboard:
+https://render.com/docs/cli
+
+Once the CLI is available in PATH, re-run this script to kick off a deployment.
+EOF
+    exit 1
 fi
 
-# Deploy to Render
 echo "📦 Deploying backend to Render..."
 render deploy
 
