@@ -29,9 +29,9 @@ export const useOutlineStreaming = (presentationId: string | null) => {
       setIsStreaming(true)
       setIsLoading(true)
       try {
-        eventSource = new EventSource(
-          buildBackendUrl(`/api/v1/ppt/outlines/stream/${presentationId}`)
-        );
+        // Use relative URL to leverage Next.js rewrites for long-lived SSE connections.
+        // Direct cross-origin EventSource calls were occasionally blocked by browsers/CDNs.
+        eventSource = new EventSource(`/api/v1/ppt/outlines/stream/${presentationId}`);
 
         eventSource.addEventListener("response", (event) => {
           const data = JSON.parse(event.data);
