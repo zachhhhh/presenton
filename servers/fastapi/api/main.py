@@ -61,7 +61,10 @@ async def root():
         return RedirectResponse(url=f"{frontend_base_url.rstrip('/')}/dashboard")
     if frontend_host:
         host = frontend_host.strip()
-        if host.startswith("http://") or host.startswith("https://"):
+        if host.startswith("http://"):
+            host = "https://" + host[len("http://"):]
+            return RedirectResponse(url=f"{host.rstrip('/')}/dashboard")
+        if host.startswith("https://"):
             return RedirectResponse(url=f"{host.rstrip('/')}/dashboard")
         if "." in host:
             return RedirectResponse(url=f"https://{host}/dashboard")
