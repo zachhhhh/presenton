@@ -8,12 +8,22 @@ from chromadb.utils.embedding_functions import ONNXMiniLM_L6_V2
 class IconFinderService:
     def __init__(self):
         self.collection_name = "icons"
+        self.client = None
+        self.collection = None
+        self.embedding_function = None
+        self._initialized = False
+
+    def _ensure_initialized(self):
+        if self._initialized:
+            return
+
         self.client = chromadb.PersistentClient(
             path="chroma", settings=Settings(anonymized_telemetry=False)
         )
         print("Initializing icons collection...")
         self._initialize_icons_collection()
         print("Icons collection initialized.")
+        self._initialized = True
 
     def _initialize_icons_collection(self):
         self.embedding_function = ONNXMiniLM_L6_V2()
@@ -45,6 +55,7 @@ class IconFinderService:
                 self.collection.add(documents=documents, ids=ids)
 
     async def search_icons(self, query: str, k: int = 1):
+        self._ensure_initialized()
         result = await asyncio.to_thread(
             self.collection.query,
             query_texts=[query],
