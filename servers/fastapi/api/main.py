@@ -69,4 +69,10 @@ async def root():
         if "." in host:
             return RedirectResponse(url=f"https://{host}/dashboard")
         return RedirectResponse(url=f"https://{host}.onrender.com/dashboard")
-    return RedirectResponse(url="https://presenton-web.onrender.com/dashboard")
+    return {
+        "status": "ok",
+        "service": "presenton-api",
+        "health": "/health",
+        "docs": "/docs",
+        "api": "/api/v1",
+    }
