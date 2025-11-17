@@ -39,7 +39,24 @@ def get_user_config_path_env():
 
 
 def get_llm_provider_env():
-    return os.getenv("LLM")
+    value = os.getenv("LLM")
+    if value:
+        return value
+
+    # Fallback heuristics so deployments without LLM explicitly set
+    # can still select a valid provider based on other env vars.
+    if os.getenv("CUSTOM_LLM_URL") or os.getenv("CUSTOM_LLM_API_KEY"):
+        return "custom"
+    if os.getenv("OPENAI_API_KEY"):
+        return "openai"
+    if os.getenv("GOOGLE_API_KEY"):
+        return "google"
+    if os.getenv("ANTHROPIC_API_KEY"):
+        return "anthropic"
+    if os.getenv("OLLAMA_URL"):
+        return "ollama"
+
+    return None
 
 
 def get_anthropic_api_key_env():
