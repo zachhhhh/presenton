@@ -4,6 +4,7 @@ from constants.llm import (
     DEFAULT_ANTHROPIC_MODEL,
     DEFAULT_GOOGLE_MODEL,
     DEFAULT_OPENAI_MODEL,
+    DEFAULT_CUSTOM_MODEL,
 )
 from enums.llm_provider import LLMProvider
 from utils.get_env import (
@@ -20,15 +21,8 @@ CUSTOM_COMPATIBLE_PROVIDERS = (LLMProvider.CUSTOM, LLMProvider.ZAI)
 
 
 def get_llm_provider():
-    selected = get_llm_provider_env()
-    if not selected:
-        raise HTTPException(
-            status_code=500,
-            detail="LLM provider is not configured. Set the `LLM` env (or `DEFAULT_LLM_PROVIDER`) and the matching API key/url before generating outlines.",
-        )
-
     try:
-        return LLMProvider(selected)
+        return LLMProvider(get_llm_provider_env())
     except ValueError:
         raise HTTPException(
             status_code=500,
@@ -67,7 +61,7 @@ def get_model():
     elif selected_llm == LLMProvider.OLLAMA:
         return get_ollama_model_env()
     elif selected_llm in CUSTOM_COMPATIBLE_PROVIDERS:
-        return get_custom_model_env()
+        return get_custom_model_env() or DEFAULT_CUSTOM_MODEL
     else:
         raise HTTPException(
             status_code=500,

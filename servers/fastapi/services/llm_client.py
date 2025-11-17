@@ -20,6 +20,7 @@ from google.genai.types import Tool as GoogleTool
 from anthropic import AsyncAnthropic
 from anthropic.types import Message as AnthropicMessage
 from anthropic import MessageStreamEvent as AnthropicMessageStreamEvent
+from constants.llm import DEFAULT_CUSTOM_LLM_URL
 from enums.llm_provider import LLMProvider
 from models.llm_message import (
     AnthropicAssistantMessage,
@@ -141,13 +142,18 @@ class LLMClient:
         )
 
     def _get_custom_client(self):
-        if not get_custom_llm_url_env():
+        custom_url = get_custom_llm_url_env()
+        if not custom_url and self.llm_provider == LLMProvider.ZAI:
+            custom_url = DEFAULT_CUSTOM_LLM_URL
+
+        if not custom_url:
             raise HTTPException(
                 status_code=400,
                 detail="Custom LLM URL is not set",
             )
+
         return AsyncOpenAI(
-            base_url=get_custom_llm_url_env(),
+            base_url=custom_url,
             api_key=get_custom_llm_api_key_env() or "null",
         )
 
