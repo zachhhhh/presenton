@@ -159,9 +159,9 @@ const UploadPage = () => {
     trackEvent(MixpanelEvent.Upload_Create_Presentation_API_Call);
     const createResponse = await PresentationGenerationApi.createPresentation({
       content: config?.prompt ?? "",
-      n_slides: config?.slides ? parseInt(config.slides) : null,
+      n_slides: config?.slides ? parseInt(config.slides) : 8,
       file_paths: [],
-      language: config?.language ?? "",
+      language: config?.language ?? LanguageType.English,
       tone: config?.tone,
       verbosity: config?.verbosity,
       instructions: config?.instructions || null,
