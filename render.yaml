@@ -24,7 +24,7 @@ services:
           type: web
           property: url
       - key: HEAVY_FEATURES_ENABLED
-        value: "false"
+        value: "true"
       - key: CAN_CHANGE_KEYS
         value: "false"
       - key: GOOGLE_API_KEY
