@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import * as z from "zod";
 import { useDispatch } from "react-redux";
 import { setLayoutLoading } from "@/store/slices/presentationGeneration";
+import { apiFetch } from "@/lib/api-client";
 
 import * as Babel from "@babel/standalone";
 import * as Recharts from "recharts";
@@ -357,7 +358,7 @@ export const LayoutProvider: React.FC<{
     const templateLayoutsCache = new Map<string, LayoutInfo[]>();
     const fullDataByTemplateID = new Map<string, FullDataInfo[]>();
     try {
-      const customTemplateResponse = await fetch(
+      const customTemplateResponse = await apiFetch(
         `/api/v1/ppt/template-management/summary`,
         {
           headers: {
@@ -385,7 +386,7 @@ export const LayoutProvider: React.FC<{
           layoutsByTemplateID.set(templateID, new Set());
         }
         const presentationId = pid;
-        const customLayoutResponse = await fetch(
+        const customLayoutResponse = await apiFetch(
           `/api/v1/ppt/template-management/get-templates/${presentationId}`,
           {
             headers: {

@@ -1,6 +1,7 @@
 import { getHeader, getHeaderForFormData } from "./header";
 import { IconSearch, ImageGenerate, ImageSearch, PreviousGeneratedImagesResponse } from "./params";
 import { ApiResponseHandler } from "./api-error-handler";
+import { apiFetch } from "@/lib/api-client";
 
 export class PresentationGenerationApi {
   static async uploadDoc(documents: File[]) {
@@ -11,7 +12,7 @@ export class PresentationGenerationApi {
     });
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/v1/ppt/files/upload`,
         {
           method: "POST",
@@ -30,7 +31,7 @@ export class PresentationGenerationApi {
 
   static async decomposeDocuments(documentKeys: string[]) {
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/v1/ppt/files/decompose`,
         {
           method: "POST",
@@ -74,7 +75,7 @@ export class PresentationGenerationApi {
     web_search?: boolean;
   }) {
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/v1/ppt/presentation/create`,
         {
           method: "POST",
@@ -107,7 +108,7 @@ export class PresentationGenerationApi {
     prompt: string
   ) {
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/v1/ppt/slide/edit`,
         {
           method: "POST",
@@ -129,7 +130,7 @@ export class PresentationGenerationApi {
 
   static async updatePresentationContent(body: any) {
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/v1/ppt/presentation/update`,
         {
           method: "PATCH",
@@ -148,7 +149,7 @@ export class PresentationGenerationApi {
 
   static async presentationPrepare(presentationData: any) {
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/v1/ppt/presentation/prepare`,
         {
           method: "POST",
@@ -170,7 +171,7 @@ export class PresentationGenerationApi {
   
   static async generateImage(imageGenerate: ImageGenerate) {
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/v1/ppt/images/generate?prompt=${imageGenerate.prompt}`,
         {
           method: "GET",
@@ -188,7 +189,7 @@ export class PresentationGenerationApi {
 
   static getPreviousGeneratedImages = async (): Promise<PreviousGeneratedImagesResponse[]> => {
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/v1/ppt/images/generated`,
         {
           method: "GET",
@@ -205,7 +206,7 @@ export class PresentationGenerationApi {
   
   static async searchIcons(iconSearch: IconSearch) {
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/v1/ppt/icons/search?query=${iconSearch.query}&limit=${iconSearch.limit}`,
         {
           method: "GET",
@@ -226,7 +227,7 @@ export class PresentationGenerationApi {
   // EXPORT PRESENTATION
   static async exportAsPPTX(presentationData: any) {
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/v1/ppt/presentation/export/pptx`,
         {
           method: "POST",

@@ -16,6 +16,7 @@ import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from "@/com
 import { useFontLoader } from "../../hooks/useFontLoader";
 import { trackEvent, MixpanelEvent } from "@/utils/mixpanel";
 import { getHeader } from "../../services/api/header";
+import { apiFetch } from "@/lib/api-client";
 
 const GroupLayoutPreview = () => {
   const params = useParams();
@@ -49,7 +50,7 @@ const GroupLayoutPreview = () => {
     const loadCustomLayouts = async () => {
       if (!isCustom || !presentationId) return;
       try {
-        const res = await fetch(`/api/v1/ppt/template-management/get-templates/${presentationId}`, {
+        const res = await apiFetch(`/api/v1/ppt/template-management/get-templates/${presentationId}`, {
           headers: getHeader(),
         });
         if (!res.ok) return;
@@ -112,7 +113,7 @@ const GroupLayoutPreview = () => {
   const deleteLayouts = async () => {
     refetch();
     router.back();
-    const response = await fetch(`/api/v1/ppt/template-management/delete-templates/${presentationId}`, {
+    const response = await apiFetch(`/api/v1/ppt/template-management/delete-templates/${presentationId}`, {
       method: "DELETE",
       headers: getHeader(),
     });
@@ -154,7 +155,7 @@ const GroupLayoutPreview = () => {
           },
         ],
       };
-      const res = await fetch(`/api/v1/ppt/template-management/save-templates`, {
+      const res = await apiFetch(`/api/v1/ppt/template-management/save-templates`, {
         method: "POST",
         headers: getHeader(),
         body: JSON.stringify(payload),

@@ -58,13 +58,17 @@ class TempFileService:
                 for name in dirs:
                     os.rmdir(os.path.join(root, name))
 
-    def cleanup_temp_dir(self, dir_path: str):
+    def cleanup_temp_dir(self, dir_path: str, remove_dir: bool = True):
         if os.path.exists(dir_path):
             self.delete_dir_files(dir_path)
-            os.rmdir(dir_path)
+            if remove_dir:
+                try:
+                    os.rmdir(dir_path)
+                except PermissionError:
+                    pass
 
     def cleanup_base_dir(self):
-        self.cleanup_temp_dir(self.base_dir)
+        self.cleanup_temp_dir(self.base_dir, remove_dir=False)
 
 
 TEMP_FILE_SERVICE = TempFileService()

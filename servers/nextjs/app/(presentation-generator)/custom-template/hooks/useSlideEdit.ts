@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import html2canvas from "html2canvas";
 import { ProcessedSlide } from "../types";
+import { apiFetch } from "@/lib/api-client";
 
 export const useSlideEdit = (
   slide: ProcessedSlide,
@@ -142,7 +143,7 @@ export const useSlideEdit = (
       formData.append("html", currentHtml);
       formData.append("prompt", prompt);
 
-      const response = await fetch("/api/v1/ppt/html-edit/", {
+      const response = await apiFetch("/api/v1/ppt/html-edit/", {
         method: "POST",
         body: formData,
       });

@@ -108,6 +108,16 @@ You can also set the following environment variables to customize the image gene
 - **GOOGLE_API_KEY=[Your Google API Key]**: Required if using **gemini_flash** as the image provider.
 - **OPENAI_API_KEY=[Your OpenAI API Key]**: Required if using **dall-e-3** as the image provider.
 
+### Hosted deployments (Render + Vercel)
+
+If you host the FastAPI backend and the Next.js frontend separately, make sure the UI knows where to find the API:
+
+- **Vercel frontend + Render backend**: In the Vercel dashboard add an environment variable called `NEXT_PUBLIC_FASTAPI_URL` with the value of your Render FastAPI URL (for example `https://presenton-api.onrender.com`). Re-deploy after saving so both the build and runtime pick it up.
+- **Both services on Render**: The included `render.yaml` already injects `NEXT_PUBLIC_FASTAPI_URL="https://${FASTAPI_HOST}.onrender.com"` into the Next.js service and wires the FastAPI service with `FRONTEND_URL`, `FRONTEND_BASE_URL`, and `FRONTEND_HOST`. If you rename services update those variables to keep redirects/CORS correct.
+- **Self-hosted/custom domains**: Either set `NEXT_PUBLIC_FASTAPI_URL` in your hosting provider or export it locally before `npm run build`. The new `apiFetch` helper automatically falls back to `http://localhost:8000` in development if nothing is set.
+
+With that variable defined the frontend bypasses Vercel rewrites and talks directly to FastAPI, eliminating the “Failed to create presentation” errors when running on hosted platforms.
+
 You can disable anonymous telemetry using the following environment variable:
 - **DISABLE_ANONYMOUS_TELEMETRY=[true/false]**: Set this to **true** to disable anonymous telemetry.
 

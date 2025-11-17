@@ -9,6 +9,7 @@ import { useLayout } from "../context/LayoutContext";
 import { trackEvent, MixpanelEvent } from "@/utils/mixpanel";
 import { getHeader } from "../services/api/header";
 import { toast } from "sonner";
+import { apiFetch } from "@/lib/api-client";
 
 const LayoutPreview = () => {
   const {
@@ -38,7 +39,7 @@ const LayoutPreview = () => {
 
   useEffect(() => {
     // Fetch summary to map custom template slug to template meta and last updated time
-    fetch(`/api/v1/ppt/template-management/summary`, {
+    apiFetch(`/api/v1/ppt/template-management/summary`, {
       headers: getHeader(),
     })
       .then((res) => res.json())

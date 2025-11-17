@@ -2,6 +2,7 @@ import {
   getHeader,
 } from "@/app/(presentation-generator)/services/api/header";
 import { ApiResponseHandler } from "@/app/(presentation-generator)/services/api/api-error-handler";
+import { apiFetch } from "@/lib/api-client";
 
 export interface PresentationResponse {
   id: string;
@@ -26,7 +27,7 @@ export class DashboardApi {
 
   static async getPresentations(): Promise<PresentationResponse[]> {
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/v1/ppt/presentation/all`,
         {
           method: "GET",
@@ -48,7 +49,7 @@ export class DashboardApi {
   
   static async getPresentation(id: string) {
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/v1/ppt/presentation/${id}`,
         {
           method: "GET",
@@ -64,7 +65,7 @@ export class DashboardApi {
   
   static async deletePresentation(presentation_id: string) {
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/v1/ppt/presentation/${presentation_id}`,
         {
           method: "DELETE",
