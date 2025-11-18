@@ -8,3 +8,4 @@ DEFAULT_ANTHROPIC_MODEL = "claude-sonnet-4-20250514"
 # Custom endpoints (Z.AI)
 DEFAULT_CUSTOM_MODEL = "glm-4.6"
 DEFAULT_CUSTOM_LLM_URL = "https://api.z.ai/v1"
+DEFAULT_COGVIEW_MODEL = "CogView-4-250304"

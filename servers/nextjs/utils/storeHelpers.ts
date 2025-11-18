@@ -74,6 +74,8 @@ export const hasValidLLMConfig = (llmConfig: LLMConfig) => {
         return llmConfig.OPENAI_API_KEY && llmConfig.OPENAI_API_KEY !== "";
       case "gemini_flash":
         return llmConfig.GOOGLE_API_KEY && llmConfig.GOOGLE_API_KEY !== "";
+      case "cogview":
+        return llmConfig.CUSTOM_LLM_API_KEY && llmConfig.CUSTOM_LLM_API_KEY !== "";
       default:
         return false;
     }

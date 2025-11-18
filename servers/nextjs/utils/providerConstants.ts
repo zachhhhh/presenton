@@ -61,6 +61,15 @@ export const IMAGE_PROVIDERS: Record<string, ImageProviderOption> = {
     apiKeyField: "GOOGLE_API_KEY",
     apiKeyFieldLabel: "Google API Key"
   },
+  cogview: {
+    value: "cogview",
+    label: "CogView (Z.AI)",
+    description: "Z.AI's CogView-4-250304 image model",
+    icon: "/icons/zai.png",
+    requiresApiKey: true,
+    apiKeyField: "CUSTOM_LLM_API_KEY",
+    apiKeyFieldLabel: "Z.AI API Key"
+  },
 };
 
 export const LLM_PROVIDERS: Record<string, LLMProviderOption> = {

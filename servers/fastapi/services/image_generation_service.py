@@ -9,12 +9,15 @@ from models.sql.image_asset import ImageAsset
 from utils.download_helpers import download_file
 from utils.get_env import get_pexels_api_key_env
 from utils.get_env import get_pixabay_api_key_env
+from utils.get_env import get_custom_llm_url_env, get_custom_llm_api_key_env, get_cogview_model_env
 from utils.image_provider import (
     is_pixels_selected,
     is_pixabay_selected,
     is_gemini_flash_selected,
     is_dalle3_selected,
+    is_cogview_selected,
 )
+from constants.llm import DEFAULT_CUSTOM_LLM_URL, DEFAULT_COGVIEW_MODEL
 import uuid
 
 
@@ -33,6 +36,8 @@ class ImageGenerationService:
             return self.generate_image_google
         elif is_dalle3_selected():
             return self.generate_image_openai
+        elif is_cogview_selected():
+            return self.generate_image_zai
         return None
 
     def is_stock_provider_selected(self):
@@ -110,6 +115,22 @@ class ImageGenerationService:
                     f.write(part.inline_data.data)
 
         return image_path
+
+    async def generate_image_zai(self, prompt: str, output_directory: str) -> str:
+        base_url = get_custom_llm_url_env() or DEFAULT_CUSTOM_LLM_URL
+        client = AsyncOpenAI(
+            base_url=base_url,
+            api_key=get_custom_llm_api_key_env() or "null",
+        )
+        result = await client.images.generate(
+            model=get_cogview_model_env() or DEFAULT_COGVIEW_MODEL,
+            prompt=prompt,
+            n=1,
+            quality="high",
+            size="1024x1024",
+        )
+        image_url = result.data[0].url
+        return await download_file(image_url, output_directory)
 
     async def get_image_from_pexels(self, prompt: str) -> str:
         async with aiohttp.ClientSession(trust_env=True) as session:

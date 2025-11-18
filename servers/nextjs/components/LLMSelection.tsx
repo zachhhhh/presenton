@@ -128,6 +128,16 @@ export default function LLMProviderSelection({
   }, [llmConfig.LLM]);
 
   useEffect(() => {
+    if (llmConfig.LLM !== "z.ai") return;
+    if (llmConfig.IMAGE_PROVIDER === "cogview") return;
+
+    setLlmConfig((prev) => ({
+      ...prev,
+      IMAGE_PROVIDER: "cogview",
+    }));
+  }, [llmConfig.LLM, llmConfig.IMAGE_PROVIDER]);
+
+  useEffect(() => {
     const defaultOllamaUrl =
       process.env.NEXT_PUBLIC_OLLAMA_URL ||
       (process.env.NODE_ENV === "development" ? "http://localhost:11434" : "");
@@ -351,6 +361,10 @@ export default function LLMProviderSelection({
               return <></>;
             }
 
+            if (provider.value === "cogview" && llmConfig.LLM === "z.ai") {
+              return <></>;
+            }
+
             // Show API key input for other providers
             return (
               <div className="mb-8">
@@ -367,6 +381,8 @@ export default function LLMProviderSelection({
                         ? llmConfig.PEXELS_API_KEY || ""
                         : provider.apiKeyField === "PIXABAY_API_KEY"
                           ? llmConfig.PIXABAY_API_KEY || ""
+                          : provider.apiKeyField === "CUSTOM_LLM_API_KEY"
+                            ? llmConfig.CUSTOM_LLM_API_KEY || ""
                           : ""
                     }
                     onChange={(e) => {
@@ -374,6 +390,8 @@ export default function LLMProviderSelection({
                         input_field_changed(e.target.value, "pexels_api_key");
                       } else if (provider.apiKeyField === "PIXABAY_API_KEY") {
                         input_field_changed(e.target.value, "pixabay_api_key");
+                      } else if (provider.apiKeyField === "CUSTOM_LLM_API_KEY") {
+                        input_field_changed(e.target.value, "custom_llm_api_key");
                       }
                     }}
                   />
