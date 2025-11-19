@@ -4,6 +4,14 @@ set -euo pipefail
 echo "🚀 Deploying to Vercel..."
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+DOTENV_FILE="$ROOT_DIR/.env"
+
+if [[ -f "$DOTENV_FILE" ]]; then
+    # shellcheck disable=SC1090
+    set -a
+    source "$DOTENV_FILE"
+    set +a
+fi
 
 # Check if Vercel CLI is installed
 if ! command -v vercel &> /dev/null; then

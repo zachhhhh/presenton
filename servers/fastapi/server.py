@@ -1,7 +1,10 @@
-import uvicorn
 import argparse
 
-if __name__ == "__main__":
+import uvicorn
+from api.main import app
+
+
+def main() -> None:
     parser = argparse.ArgumentParser(description="Run the FastAPI server")
     parser.add_argument(
         "--port", type=int, required=True, help="Port number to run the server on"
@@ -11,7 +14,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     reload = args.reload == "true"
-    
+
     uvicorn.run(
         "api.main:app",
         host="0.0.0.0",
@@ -19,3 +22,7 @@ if __name__ == "__main__":
         log_level="info",
         reload=reload,
     )
+
+
+if __name__ == "__main__":
+    main()

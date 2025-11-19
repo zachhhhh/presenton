@@ -479,4 +479,7 @@ class PptxPresentationCreator:
             print(f"Could not apply strikethrough: {e}")
 
     def save(self, path: str):
+        directory = os.path.dirname(path)
+        if directory:
+            os.makedirs(directory, exist_ok=True)
         self._ppt.save(path)

@@ -78,10 +78,10 @@ export const changeProvider = (
 
   if (provider === "z.ai") {
     if (!newConfig.CUSTOM_LLM_URL) {
-      newConfig.CUSTOM_LLM_URL = "https://api.z.ai/v1";
+      newConfig.CUSTOM_LLM_URL = "https://api.z.ai/api/paas/v4";
     }
     if (!newConfig.CUSTOM_MODEL) {
-      newConfig.CUSTOM_MODEL = "glm-4.6";
+      newConfig.CUSTOM_MODEL = "glm4.6";
     }
   }
 

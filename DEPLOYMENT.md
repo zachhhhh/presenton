@@ -59,9 +59,9 @@ The following environment variables are configured in your `.env` file:
 ```bash
 # LLM Provider Configuration
 LLM=custom                    # Currently set to Z.AI (change as needed)
-CUSTOM_LLM_URL=https://api.z.ai/v1
+CUSTOM_LLM_URL=https://api.z.ai/api/paas/v4
 CUSTOM_LLM_API_KEY=<your_zai_api_key>
-CUSTOM_MODEL=glm-4.6
+CUSTOM_MODEL=glm4.6
 
 # Backup providers (uncomment to use)
 # LLM=openai
@@ -88,7 +88,7 @@ During testing, the following API quota issues were encountered:
 - **OpenAI**: Quota exceeded (check billing at https://platform.openai.com/)
 - **Google Gemini**: Free tier limits reached
 - **Anthropic**: Insufficient credits
-- **Z.AI**: Endpoint returned 404 (may need different URL format)
+- **Z.AI**: Use the `/api/paas/v4` base URL (matching Z.AI’s docs) to avoid the 404.
 
 **Recommendation**: Start with Z.AI custom provider, and switch to other providers as needed by changing the `LLM=` value in `.env`.
 
