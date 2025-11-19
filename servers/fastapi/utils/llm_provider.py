@@ -5,18 +5,18 @@ from constants.llm import (
     DEFAULT_GOOGLE_MODEL,
     DEFAULT_OPENAI_MODEL,
     DEFAULT_CUSTOM_MODEL,
+    DEFAULT_CUSTOM_LLM_URL,
 )
 from enums.llm_provider import LLMProvider
-from google import genai
 from openai import OpenAI
 from utils.get_env import (
     get_anthropic_model_env,
+    get_custom_llm_api_key_env,
+    get_custom_llm_url_env,
     get_custom_model_env,
-    get_google_api_key_env,
     get_google_model_env,
     get_llm_provider_env,
     get_ollama_model_env,
-    get_openai_api_key_env,
     get_openai_model_env,
 )
 
@@ -74,44 +74,19 @@ def get_model():
 
 
 def get_llm_client() -> OpenAI:
-    """Return an OpenAI client for schema tests."""
-    return OpenAI(api_key=get_openai_api_key_env() or None)
+    """Return a custom OpenAI-compatible client pointing at Z.AI."""
+    base_url = get_custom_llm_url_env() or DEFAULT_CUSTOM_LLM_URL
+    return OpenAI(
+        base_url=base_url,
+        api_key=get_custom_llm_api_key_env() or "null",
+    )
 
 
-def get_google_llm_client() -> genai.Client:
-    """Return a Google Gemini client for schema tests."""
-    key = get_google_api_key_env()
-    if key:
-        return genai.Client(api_key=key)
-    return genai.Client()
+def get_google_llm_client():
+    """Google/Anthropic support is disabled; use glm4.6 instead."""
+    raise RuntimeError("Google Gemini client is disabled while focusing on glm4.6.")
 
 
-def get_large_model(provider: LLMProvider | None = None) -> str:
-    """Return an LLM ID suitable for schema-parsing tests."""
-
-    def _fallback_provider() -> LLMProvider | None:
-        if get_openai_api_key_env():
-            return LLMProvider.OPENAI
-        if get_google_api_key_env():
-            return LLMProvider.GOOGLE
-        return None
-
-    selected_provider = provider or get_llm_provider()
-    if selected_provider in (LLMProvider.CUSTOM, LLMProvider.ZAI):
-        fallback = _fallback_provider()
-        if fallback:
-            selected_provider = fallback
-
-    match selected_provider:
-        case LLMProvider.OPENAI:
-            return get_openai_model_env() or DEFAULT_OPENAI_MODEL
-        case LLMProvider.GOOGLE:
-            return get_google_model_env() or DEFAULT_GOOGLE_MODEL
-        case LLMProvider.ANTHROPIC:
-            return get_anthropic_model_env() or DEFAULT_ANTHROPIC_MODEL
-        case LLMProvider.OLLAMA:
-            return get_ollama_model_env() or ""
-        case LLMProvider.CUSTOM | LLMProvider.ZAI:
-            return get_custom_model_env() or DEFAULT_CUSTOM_MODEL
-        case _:
-            return DEFAULT_OPENAI_MODEL
+def get_large_model() -> str:
+    """Return the glm4.6 model ID used across the stack."""
+    return get_custom_model_env() or DEFAULT_CUSTOM_MODEL

@@ -62,6 +62,8 @@ LLM=custom                    # Currently set to Z.AI (change as needed)
 CUSTOM_LLM_URL=https://api.z.ai/api/paas/v4
 CUSTOM_LLM_API_KEY=<your_zai_api_key>
 CUSTOM_MODEL=glm4.6
+IMAGE_PROVIDER=cogview
+DEFAULT_LLM_PROVIDER=custom
 
 # Backup providers (uncomment to use)
 # LLM=openai
