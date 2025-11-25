@@ -48,7 +48,9 @@ def normalize_custom_model(model: str | None) -> str:
     if model == "glm4.6":
         return "glm-4.6"
     if model == "glm4-air":
-        return "glm-4-air"
+        return "glm-4.5-air"
+    if model == "glm-4-air":
+        return "glm-4.5-air"
     return model
 
 
@@ -116,5 +118,5 @@ def get_google_llm_client():
 
 
 def get_large_model() -> str:
-    """Return the glm-4-air model ID used across the stack."""
+    """Return the glm-4.5-air model ID used across the stack."""
     return normalize_custom_model(get_custom_model_env())

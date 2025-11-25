@@ -117,7 +117,7 @@ export default function LLMProviderSelection({
         shouldUpdate = true;
       }
       if (!prev.CUSTOM_MODEL) {
-      updates.CUSTOM_MODEL = "glm-4-air";
+      updates.CUSTOM_MODEL = "glm-4.5-air";
         shouldUpdate = true;
       }
       if (!shouldUpdate) {
@@ -254,7 +254,7 @@ export default function LLMProviderSelection({
           <TabsContent value="z.ai" className="mt-6">
             <div className="mb-4 p-4 bg-purple-50 border border-purple-200 rounded-lg text-sm text-purple-900">
               Connect to Z.AI's OpenAI-compatible endpoint. Defaults are pre-filled, but replace them
-              with your workspace URL, API key, and preferred `glm-4-air` model as needed.
+              with your workspace URL, API key, and preferred `glm-4.5-air` model as needed.
             </div>
             <CustomConfig
               customLlmUrl={llmConfig.CUSTOM_LLM_URL || ""}

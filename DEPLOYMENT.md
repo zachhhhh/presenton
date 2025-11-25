@@ -61,7 +61,7 @@ The following environment variables are configured in your `.env` file:
 LLM=custom                    # Currently set to Z.AI (change as needed)
 CUSTOM_LLM_URL=https://api.z.ai/api/paas/v4
 CUSTOM_LLM_API_KEY=<your_zai_api_key>
-CUSTOM_MODEL=glm-4-air        # Free tier-friendly
+CUSTOM_MODEL=glm-4.5-air        # Free tier-friendly
 IMAGE_PROVIDER=cogview
 DEFAULT_LLM_PROVIDER=custom
 

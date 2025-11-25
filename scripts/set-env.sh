@@ -46,7 +46,7 @@ if [[ -n "$PROVIDER" ]]; then
       BASE_URL="https://api.z.ai/api/paas/v4"
     fi
     if [[ -z "$MODEL" ]]; then
-      MODEL="glm-4-air"
+      MODEL="glm-4.5-air"
     fi
     set_kv "CUSTOM_LLM_URL" "$BASE_URL"
     set_kv "CUSTOM_MODEL" "$MODEL"
