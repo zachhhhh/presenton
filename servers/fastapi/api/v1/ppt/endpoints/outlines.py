@@ -83,14 +83,25 @@ async def stream_outlines(
 
             presentation_outlines_text += chunk
 
+        # Bail out early if the LLM returned nothing (commonly from upstream rate limits).
+        if not presentation_outlines_text.strip():
+            yield SSEErrorResponse(
+                detail=(
+                    "Failed to generate presentation outlines: empty response from LLM. "
+                    "Please try again or check provider quota."
+                )
+            ).to_string()
+            return
+
         try:
-            presentation_outlines_json = dict(
-                dirtyjson.loads(presentation_outlines_text)
-            )
+            presentation_outlines_json = dict(dirtyjson.loads(presentation_outlines_text))
         except Exception as e:
             traceback.print_exc()
+            hint = ""
+            if "Expecting value" in str(e):
+                hint = " (LLM returned invalid/empty JSON; often caused by provider rate limits)"
             yield SSEErrorResponse(
-                detail=f"Failed to generate presentation outlines. Please try again. {str(e)}",
+                detail=f"Failed to generate presentation outlines. Please try again. {str(e)}{hint}",
             ).to_string()
             return
 
