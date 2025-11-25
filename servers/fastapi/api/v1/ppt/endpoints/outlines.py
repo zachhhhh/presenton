@@ -93,6 +93,16 @@ async def stream_outlines(
             ).to_string()
             return
 
+        # Basic shape check before attempting to parse JSON.
+        if not presentation_outlines_text.lstrip().startswith("{"):
+            yield SSEErrorResponse(
+                detail=(
+                    "Failed to generate presentation outlines: LLM returned non-JSON output. "
+                    "Please retry; if this persists, check provider quota or switch model."
+                )
+            ).to_string()
+            return
+
         try:
             presentation_outlines_json = dict(dirtyjson.loads(presentation_outlines_text))
         except Exception as e:
