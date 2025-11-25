@@ -30,6 +30,8 @@ from utils.llm_provider import (
 )
 from utils.ollama import pull_ollama_model
 from utils.image_provider import get_selected_image_provider
+from constants.llm import DEFAULT_CUSTOM_MODEL
+from utils.set_env import set_custom_model_env
 
 
 async def check_llm_and_image_provider_api_or_model_availability():
@@ -106,7 +108,20 @@ async def check_llm_and_image_provider_api_or_model_availability():
             print("-" * 50)
             print("Available models: ", available_models)
             if custom_model not in available_models:
-                raise Exception(f"Model {custom_model} is not available")
+                # Pick a safe fallback to keep the service running.
+                fallback = None
+                if DEFAULT_CUSTOM_MODEL in available_models:
+                    fallback = DEFAULT_CUSTOM_MODEL
+                elif available_models:
+                    fallback = available_models[0]
+
+                if fallback:
+                    print(
+                        f"Model {custom_model} is not available. Falling back to {fallback}."
+                    )
+                    set_custom_model_env(fallback)
+                else:
+                    raise Exception(f"Model {custom_model} is not available and no fallback was found")
 
         # Check for Image Provider and API keys
         selected_image_provider = get_selected_image_provider()
