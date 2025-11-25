@@ -27,7 +27,19 @@ services:
         value: "true"
       - key: CAN_CHANGE_KEYS
         value: "false"
+      - key: LLM
+        value: "z.ai"
+      - key: DEFAULT_LLM_PROVIDER
+        value: "z.ai"
+      - key: CUSTOM_LLM_URL
+        value: "https://api.z.ai/api/paas/v4"
+      - key: CUSTOM_MODEL
+        value: "glm-4.6"
+      - key: IMAGE_PROVIDER
+        value: "cogview"
       - key: GOOGLE_API_KEY
+        sync: false
+      - key: CUSTOM_LLM_API_KEY
         sync: false
       - key: SUPABASE_URL
         sync: false

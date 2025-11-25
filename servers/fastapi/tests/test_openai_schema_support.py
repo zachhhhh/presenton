@@ -5,7 +5,7 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 
-pytest.skip("OpenAI schema tests disabled while focusing on glm4.6.", allow_module_level=True)
+pytest.skip("OpenAI schema tests disabled while focusing on glm-4.6.", allow_module_level=True)
 
 from utils.llm_provider import get_llm_client, get_large_model
 

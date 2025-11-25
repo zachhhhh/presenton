@@ -58,6 +58,7 @@ from utils.llm_provider import (
     CUSTOM_COMPATIBLE_PROVIDERS,
     get_llm_provider,
     get_model,
+    normalize_custom_llm_url,
 )
 from utils.parsers import parse_bool_or_none
 from utils.schema_utils import (
@@ -145,6 +146,8 @@ class LLMClient:
         custom_url = get_custom_llm_url_env()
         if not custom_url and self.llm_provider == LLMProvider.ZAI:
             custom_url = DEFAULT_CUSTOM_LLM_URL
+
+        custom_url = normalize_custom_llm_url(custom_url)
 
         if not custom_url:
             raise HTTPException(

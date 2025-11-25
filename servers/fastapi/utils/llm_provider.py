@@ -24,6 +24,34 @@ from utils.get_env import (
 CUSTOM_COMPATIBLE_PROVIDERS = (LLMProvider.CUSTOM, LLMProvider.ZAI)
 
 
+def normalize_custom_llm_url(url: str | None) -> str:
+    """
+    Keep legacy Z.AI URLs working by forcing the correct base path.
+    The OpenAI-compatible endpoint lives under /api/paas/v4.
+    """
+    if not url:
+        return DEFAULT_CUSTOM_LLM_URL
+
+    normalized = url.rstrip("/")
+    if normalized.startswith("https://api.z.ai"):
+        if "/api/paas/" not in normalized:
+            return DEFAULT_CUSTOM_LLM_URL
+        return normalized
+
+    return normalized
+
+
+def normalize_custom_model(model: str | None) -> str:
+    """Handle legacy glm4.6 naming and default to the recommended free model."""
+    if not model:
+        return DEFAULT_CUSTOM_MODEL
+    if model == "glm4.6":
+        return "glm-4.6"
+    if model == "glm4-air":
+        return "glm-4-air"
+    return model
+
+
 def get_llm_provider():
     try:
         return LLMProvider(get_llm_provider_env())
@@ -65,7 +93,7 @@ def get_model():
     elif selected_llm == LLMProvider.OLLAMA:
         return get_ollama_model_env()
     elif selected_llm in CUSTOM_COMPATIBLE_PROVIDERS:
-        return get_custom_model_env() or DEFAULT_CUSTOM_MODEL
+        return normalize_custom_model(get_custom_model_env())
     else:
         raise HTTPException(
             status_code=500,
@@ -75,7 +103,7 @@ def get_model():
 
 def get_llm_client() -> OpenAI:
     """Return a custom OpenAI-compatible client pointing at Z.AI."""
-    base_url = get_custom_llm_url_env() or DEFAULT_CUSTOM_LLM_URL
+    base_url = normalize_custom_llm_url(get_custom_llm_url_env())
     return OpenAI(
         base_url=base_url,
         api_key=get_custom_llm_api_key_env() or "null",
@@ -83,10 +111,10 @@ def get_llm_client() -> OpenAI:
 
 
 def get_google_llm_client():
-    """Google/Anthropic support is disabled; use glm4.6 instead."""
-    raise RuntimeError("Google Gemini client is disabled while focusing on glm4.6.")
+    """Google/Anthropic support is disabled; use glm-4.6 instead."""
+    raise RuntimeError("Google Gemini client is disabled while focusing on glm-4.6.")
 
 
 def get_large_model() -> str:
-    """Return the glm4.6 model ID used across the stack."""
-    return get_custom_model_env() or DEFAULT_CUSTOM_MODEL
+    """Return the glm-4-air model ID used across the stack."""
+    return normalize_custom_model(get_custom_model_env())

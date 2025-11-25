@@ -81,7 +81,7 @@ export const changeProvider = (
       newConfig.CUSTOM_LLM_URL = "https://api.z.ai/api/paas/v4";
     }
     if (!newConfig.CUSTOM_MODEL) {
-      newConfig.CUSTOM_MODEL = "glm4.6";
+      newConfig.CUSTOM_MODEL = "glm-4-air";
     }
   }
 
