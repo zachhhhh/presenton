@@ -61,6 +61,7 @@ from utils.llm_calls.generate_presentation_structure import (
 from utils.llm_calls.generate_slide_content import (
     get_slide_content_from_type_and_outline,
 )
+from utils.json_utils import extract_json_object
 from utils.ppt_utils import (
     get_presentation_title_from_outlines,
     select_toc_or_list_slide_layout_index,
@@ -559,9 +560,11 @@ async def generate_presentation_handler(
 
                 presentation_outlines_text += chunk
 
+            cleaned_outlines_text = extract_json_object(presentation_outlines_text)
+
             try:
                 presentation_outlines_json = dict(
-                    dirtyjson.loads(presentation_outlines_text)
+                    dirtyjson.loads(cleaned_outlines_text)
                 )
             except Exception:
                 traceback.print_exc()
@@ -820,6 +823,9 @@ async def generate_presentation_sync(
         return await generate_presentation_handler(
             request, presentation_id, None, sql_session
         )
+    except HTTPException as e:
+        # Surface expected HTTP errors (e.g., validation) instead of masking them.
+        raise e
     except Exception:
         traceback.print_exc()
         raise HTTPException(status_code=500, detail="Presentation generation failed")

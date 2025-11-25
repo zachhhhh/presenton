@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 from fastapi import FastAPI
 from models.presentation_layout import PresentationLayoutModel
 from models.presentation_structure_model import PresentationStructureModel
-from api.v1.ppt.endpoints.presentation import PRESENTATION_ROUTER
+from api.v1.ppt.endpoints.presentation import PRESENTATION_ROUTER, get_sql_session
 
 class MockAiohttpResponse:
     def __init__(self, status=200, json_data=None):
@@ -47,8 +47,33 @@ class MockAiohttpSession:
         return MockAiohttpResponse(json_data=pptx_model_data)
 
 @pytest.fixture
-def app():
+def dummy_session_override():
+    class DummySession:
+        def add(self, *args, **kwargs):
+            return None
+
+        def add_all(self, *args, **kwargs):
+            return None
+
+        async def commit(self):
+            return None
+
+        async def get(self, *args, **kwargs):
+            return None
+
+        async def scalars(self, *args, **kwargs):
+            return []
+
+    async def _override():
+        yield DummySession()
+
+    return _override
+
+
+@pytest.fixture
+def app(dummy_session_override):
     app = FastAPI()
+    app.dependency_overrides[get_sql_session] = dummy_session_override
     app.include_router(PRESENTATION_ROUTER, prefix="/api/v1/ppt")
     return app
 
@@ -66,7 +91,7 @@ def mock_get_layout():
         mock_layout = MagicMock(spec=PresentationLayoutModel)
         mock_layout.name = layout_name
         mock_layout.ordered = True
-        mock_layout.slides = [mock_slide]
+        mock_layout.slides = [mock_slide for _ in range(10)]
         mock_layout.model_dump = lambda: {}
         mock_layout.to_presentation_structure = lambda: PresentationStructureModel(
             slides=[index for index in range(len(mock_layout.slides))]
@@ -83,7 +108,12 @@ def mock_get_layout():
     return _mock_get_layout_by_name
 
 async def mock_generate_ppt_outline(*args, **kwargs):
-    yield '{"title": "Test", "slides": [{"title": "Slide 1", "body": "Body 1"}], "notes": []}'
+    slides = [{"content": f"Slide {i+1}"} for i in range(10)]
+    yield (
+        '{"title": "Test", "slides": '
+        + str(slides).replace("'", '"')
+        + "}"
+    )
 
 @pytest.fixture(autouse=True)
 def patch_presentation_api(monkeypatch, mock_get_layout):
@@ -94,7 +124,6 @@ def patch_presentation_api(monkeypatch, mock_get_layout):
         patch('api.v1.ppt.endpoints.presentation.DocumentsLoader'),
         patch('api.v1.ppt.endpoints.presentation.generate_document_summary', new_callable=AsyncMock, return_value="mock_summary"),
         patch('api.v1.ppt.endpoints.presentation.generate_ppt_outline', side_effect=mock_generate_ppt_outline),
-        patch('api.v1.ppt.endpoints.presentation.get_sql_session'),
         patch('api.v1.ppt.endpoints.presentation.get_slide_content_from_type_and_outline', new_callable=AsyncMock, return_value={"mock": "slide_content"}),
         patch('api.v1.ppt.endpoints.presentation.process_slide_and_fetch_assets', new_callable=AsyncMock),
         patch('api.v1.ppt.endpoints.presentation.get_exports_directory', return_value='/tmp/exports'),
@@ -123,7 +152,7 @@ class TestPresentationGenerationAPI:
         response = client.post(
             "/api/v1/ppt/presentation/generate",
             json={
-                "prompt": "Create a presentation about artificial intelligence and machine learning",
+                "content": "Create a presentation about artificial intelligence and machine learning",
                 "n_slides": 5,
                 "language": "English",
                 "export_as": "pdf",
@@ -138,7 +167,7 @@ class TestPresentationGenerationAPI:
         response = client.post(
             "/api/v1/ppt/presentation/generate",
             json={
-                "prompt": "Create a presentation about artificial intelligence and machine learning",
+                "content": "Create a presentation about artificial intelligence and machine learning",
                 "n_slides": 5,
                 "language": "English",
                 "export_as": "pptx",
@@ -166,20 +195,20 @@ class TestPresentationGenerationAPI:
         response = client.post(
             "/api/v1/ppt/presentation/generate",
             json={
-                "prompt": "Create a presentation about artificial intelligence and machine learning",
+                "content": "Create a presentation about artificial intelligence and machine learning",
                 "n_slides": 0,
                 "language": "English",
                 "export_as": "pdf",
                 "layout": "general"
             }
         )
-        assert response.status_code == 422
+        assert response.status_code == 400
 
     def test_generate_presentation_with_invalid_export_type(self, client):
         response = client.post(
             "/api/v1/ppt/presentation/generate",
             json={
-                "prompt": "Create a presentation about artificial intelligence and machine learning",
+                "content": "Create a presentation about artificial intelligence and machine learning",
                 "n_slides": 5,
                 "language": "English",
                 "export_as": "invalid_type",

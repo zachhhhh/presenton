@@ -9,6 +9,7 @@ from api.v1.ppt.endpoints.images import IMAGES_ROUTER
 from models.image_prompt import ImagePrompt
 from services.image_generation_service import ImageGenerationService
 from models.sql.image_asset import ImageAsset
+from services.database import get_async_session
 
 
 class TestImageGenerationService:
@@ -296,9 +297,35 @@ class TestImageGenerationEndpoint:
     """
     
     @pytest.fixture
-    def app(self):
+    def dummy_session_override(self):
+        """Provide a lightweight async DB session stub for endpoint tests."""
+
+        class DummySession:
+            def add(self, *args, **kwargs):
+                return None
+
+            async def commit(self):
+                return None
+
+            async def scalars(self, *args, **kwargs):
+                return []
+
+            async def get(self, *args, **kwargs):
+                return None
+
+            async def delete(self, *args, **kwargs):
+                return None
+
+        async def _override():
+            yield DummySession()
+
+        return _override
+
+    @pytest.fixture
+    def app(self, dummy_session_override):
         """Create FastAPI app with the images router"""
         app = FastAPI()
+        app.dependency_overrides[get_async_session] = dummy_session_override
         app.include_router(IMAGES_ROUTER)
         return app
     
@@ -354,7 +381,7 @@ class TestImageGenerationEndpoint:
                 response = client.get(f"/images/generate?prompt={test_prompt}")
                 
                 assert response.status_code == 200
-    
+
     def test_generate_image_endpoint_placeholder_response(self, client, mock_images_directory):
         """
         Test endpoint returns placeholder image when no provider is selected
@@ -374,7 +401,9 @@ class TestImageGenerationEndpoint:
                 
                 assert response.status_code == 200
 
-    def test_generate_image_endpoint_with_async_client(self, mock_images_directory):
+    def test_generate_image_endpoint_with_async_client(
+        self, mock_images_directory, dummy_session_override
+    ):
         """
         Test the image generation endpoint using an async client
         - Mocks the ImageGenerationService to return a valid image URL
@@ -383,8 +412,9 @@ class TestImageGenerationEndpoint:
         """
         async def run_test():
             app = FastAPI()
+            app.dependency_overrides[get_async_session] = dummy_session_override
             app.include_router(IMAGES_ROUTER)
-            
+
             transport = httpx.ASGITransport(app=app)
             async with httpx.AsyncClient(transport=transport, base_url="http://test") as ac:
                 with patch('api.v1.ppt.endpoints.images.get_images_directory', return_value=mock_images_directory):
@@ -397,4 +427,3 @@ class TestImageGenerationEndpoint:
                         assert response.status_code == 200
         
         asyncio.run(run_test())
-

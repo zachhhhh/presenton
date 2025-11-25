@@ -20,6 +20,7 @@ from services.temp_file_service import TEMP_FILE_SERVICE
 from services.database import get_async_session
 from services.documents_loader import DocumentsLoader
 from utils.llm_calls.generate_presentation_outlines import generate_ppt_outline
+from utils.json_utils import extract_json_object
 from utils.ppt_utils import get_presentation_title_from_outlines
 
 OUTLINES_ROUTER = APIRouter(prefix="/outlines", tags=["Outlines"])
@@ -94,7 +95,9 @@ async def stream_outlines(
             return
 
         # Basic shape check before attempting to parse JSON.
-        if not presentation_outlines_text.lstrip().startswith("{"):
+        cleaned_outlines_text = extract_json_object(presentation_outlines_text)
+
+        if not cleaned_outlines_text.lstrip().startswith("{"):
             yield SSEErrorResponse(
                 detail=(
                     "Failed to generate presentation outlines: LLM returned non-JSON output. "
@@ -104,7 +107,7 @@ async def stream_outlines(
             return
 
         try:
-            presentation_outlines_json = dict(dirtyjson.loads(presentation_outlines_text))
+            presentation_outlines_json = dict(dirtyjson.loads(cleaned_outlines_text))
         except Exception as e:
             traceback.print_exc()
             hint = ""

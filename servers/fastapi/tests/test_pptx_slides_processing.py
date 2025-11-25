@@ -1,4 +1,5 @@
 import os
+import shutil
 import tempfile
 import zipfile
 from fastapi.testclient import TestClient
@@ -70,6 +71,10 @@ def create_sample_pptx():
         return temp_file.name
 
 
+@pytest.mark.skipif(
+    shutil.which("libreoffice") is None,
+    reason="libreoffice not available in test environment",
+)
 def test_pptx_slides_processing():
     """Test the PPTX slides processing endpoint."""
     
